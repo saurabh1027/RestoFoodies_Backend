@@ -6,22 +6,25 @@ public class Order {
 	private String status;
 	private String location;
 	private float total_price;
+	private String contact;
 	private String username;
-	public Order(int oid, String name, String status, String location, float total_price, String username) {
+	public Order(int oid, String name, String status, String location, float total_price, String contact , String username) {
 		super();
 		this.oid = oid;
 		this.name = name;
 		this.status = status;
 		this.location = location;
 		this.total_price = total_price;
+		this.contact = contact;
 		this.username = username;
 	}
-	public Order(String name, String status, String location, float total_price, String username) {
+	public Order(String name, String status, String location, float total_price, String contact , String username) {
 		super();
 		this.name = name;
 		this.status = status;
 		this.location = location;
 		this.total_price = total_price;
+		this.contact = contact;
 		this.username = username;
 	}
 	public Order() {
@@ -57,6 +60,12 @@ public class Order {
 	public void setTotal_price(float total_price) {
 		this.total_price = total_price;
 	}
+	public String getContact() {
+		return contact;
+	}
+	public void setContact(String contact) {
+		this.contact = contact;
+	}
 	public String getUsername() {
 		return username;
 	}
@@ -66,6 +75,6 @@ public class Order {
 	@Override
 	public String toString() {
 		return "Order [oid=" + oid + ", name=" + name + ", status=" + status + ", location=" + location
-				+ ", total_price=" + total_price + ", username=" + username + "]";
+				+ ", total_price=" + total_price + ", contact=" + contact + ", username=" + username + "]";
 	}
 }

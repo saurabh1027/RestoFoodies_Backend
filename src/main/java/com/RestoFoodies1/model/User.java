@@ -7,12 +7,11 @@ public class User {
 	private String fullname;
 	private String role;
 	private String email;
-	private String city;
 	private String address;
 	private String profile;
 	public User() {}
-	public User(int uid, String username, String password, String fullname, String role, String email, String city,
-			String address, String profile) {
+	public User(int uid, String username, String password, String fullname, String role, String email, String address,
+			String profile) {
 		super();
 		this.uid = uid;
 		this.username = username;
@@ -20,19 +19,17 @@ public class User {
 		this.fullname = fullname;
 		this.role = role;
 		this.email = email;
-		this.city = city;
 		this.address = address;
 		this.profile = profile;
 	}
-	public User(String username, String password, String fullname, String role, String email, String city,
-			String address, String profile) {
+	public User(String username, String password, String fullname, String role, String email, String address,
+			String profile) {
 		super();
 		this.username = username;
 		this.password = password;
 		this.fullname = fullname;
 		this.role = role;
 		this.email = email;
-		this.city = city;
 		this.address = address;
 		this.profile = profile;
 	}
@@ -72,12 +69,6 @@ public class User {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getCity() {
-		return city;
-	}
-	public void setCity(String city) {
-		this.city = city;
-	}
 	public String getAddress() {
 		return address;
 	}
@@ -93,7 +84,6 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [uid=" + uid + ", username=" + username + ", password=" + password + ", fullname=" + fullname
-				+ ", role=" + role + ", email=" + email + ", city=" + city + ", address=" + address + ", profile="
-				+ profile + "]";
+				+ ", role=" + role + ", email=" + email + ", address=" + address + ", profile=" + profile + "]";
 	}
 }

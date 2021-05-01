@@ -19,6 +19,77 @@ public class RestaurantDao {
 		this.con = con;
 	}
 	
+	public Restaurant getRestaurantByRname(String rname) {
+		try {
+			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where name =?");
+			pstmt.setString(1, rname);
+			ResultSet rst = pstmt.executeQuery();
+			if(rst.next()) {
+				return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("opening_time"), rst.getString("closing_time"), rst.getString("username"));
+			}
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
+	public Restaurant getRestaurantByUsername(String username) {
+		try {
+			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where username =?");
+			pstmt.setString(1, username);
+			ResultSet rst = pstmt.executeQuery();
+			if(rst.next())return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("opening_time"), rst.getString("closing_time"), rst.getString("username"));
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
+	public List<String> getLocations(){
+		List<String> list = new ArrayList<String>();
+		try {
+			Statement stmt = con.createStatement();
+			ResultSet rst = stmt.executeQuery("select branch from restaurant");
+			while(rst.next()) {
+				String str="";
+				for(int i=0;i<rst.getString("branch").length();i++) {
+					if(rst.getString("branch").charAt(i)==',') {
+						if(!list.contains(str))
+							list.add(str);
+						str="";
+					}else {
+						str = str + rst.getString("branch").charAt(i);
+					}
+				}
+			}
+			return list;
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
+	public List<Restaurant> getRestaurantsByLocation(String location){
+		List<Restaurant> list = new ArrayList<Restaurant>();
+		try {
+			Statement stmt = con.createStatement();
+			ResultSet rst = stmt.executeQuery("select * from restaurant");
+			while(rst.next()) {
+				String str = "";
+				List<String> branches=new ArrayList<String>();
+				for(int i=0;i<rst.getString("branch").length();i++) {
+					if(rst.getString("branch").charAt(i)==',') {
+						if(!branches.contains(str))
+							branches.add(str);
+						str="";
+					}else {
+						str = str + rst.getString("branch").charAt(i);
+					}
+				}
+				if(branches.contains(location)) {
+					Restaurant rest = new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("opening_time"), rst.getString("closing_time"), rst.getString("username"));
+					list.add(rest);
+				}
+			}
+			return list;
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
 	public Restaurant getRestaurantByRid(int rid) {
 		try {
 			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where rid=?");
@@ -135,23 +206,11 @@ public class RestaurantDao {
 		return "Server Error";
 	}
 	
-	public String deleteRestaurant(int rid,String username) {
+	public String deleteRestaurant(int rid) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("select username from restaurant where rid=?");
+			PreparedStatement pstmt = con.prepareStatement("delete from restaurant where rid=?");
 			pstmt.setInt(1, rid);
-			ResultSet rst = pstmt.executeQuery();
-			int i=0;
-			if(rst.next()) {
-				i = (username.trim().equals(rst.getString("username"))) ? 1 : 0;
-			}
-			if(i==1) {
-				pstmt = con.prepareStatement("delete from restaurant where rid=?");
-				pstmt.setInt(1, rid);
-				i = pstmt.executeUpdate();
-				return (i==1) ? "Success" : "Failed to Delete";
-			}else {
-				return "Unauthorised Access";
-			}
+			return (pstmt.executeUpdate()==1) ? "Success" : "Failed to Delete";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Server Error";
 	}
@@ -394,6 +453,20 @@ public class RestaurantDao {
 		return "Database Error";
 	}
 	
+	public List<Food_Item> getRestaurantAvailableItems(int rid){
+		List<Food_Item> list = new ArrayList<Food_Item>();
+		try {
+			PreparedStatement pstmt = con.prepareStatement("select * from food_item where rid=? and status='Available'");
+			pstmt.setInt(1, rid);
+			ResultSet rst = pstmt.executeQuery();
+			while(rst.next()) {
+				list.add(new Food_Item(rst.getInt("fid"), rst.getString("fname"), rst.getDouble("price"), rst.getString("pic"), rst.getInt("quantity"), rst.getString("ingredients"), rst.getString("description"), rst.getBoolean("vegeterian"), rst.getString("ratings"), rst.getLong("ratio"), rst.getString("keywords"), rst.getString("status"), rst.getString("cname"), rst.getInt("rid")));
+			}
+			return list;
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
 	public List<Food_Item> getAvailableItemsOfRestaurant(int oid,int rid){
 		List<Food_Item> list = new ArrayList<Food_Item>();
 		List<Integer> fid = new ArrayList<Integer>();
@@ -466,7 +539,7 @@ public class RestaurantDao {
 				pstmt.setInt(1, oid.get(i));
 				rst = pstmt.executeQuery();
 				if(rst.next()) {
-					Order order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("username"));
+					Order order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("contact"), rst.getString("username"));
 					list.add(order);
 				}
 			}

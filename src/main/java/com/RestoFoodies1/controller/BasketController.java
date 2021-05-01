@@ -91,9 +91,9 @@ public class BasketController {
 	}
 	
 	@PostMapping("/get-restaurant-placed-orders")
-	public List<Order> getPlacedOrdersOfRestaurant(@RequestBody int rid){
+	public List<Order> getPlacedOrdersOfBranch(@RequestBody String branch){
 		try {
-			return bdao.getPlacedOrdersOfRestaurant(rid);
+			return bdao.getPlacedOrdersOfBranch(branch);
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}

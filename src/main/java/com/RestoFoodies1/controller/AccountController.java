@@ -30,7 +30,15 @@ public class AccountController {
 	private JwtUtil jwtUtil;
 	String imageLocation= "E:\\VS-Code\\Projects\\Angular\\RestoFoodies\\src\\assets\\images\\";
 	
-	@PostMapping("/token")
+	@PostMapping("/isLoggedIn")
+	public boolean isLoggedIn(@RequestBody String token) {
+		try {
+			return udao.isLoggedIn(this.jwtUtil.extractUsername(token));
+		} catch (Exception e) {e.printStackTrace();}
+		return false;
+	}
+	
+	@PostMapping("/authenticate-user")
 	public JwtUser authenticate(@RequestBody User user) {
 		JwtUser jwt = new JwtUser();
 		try {
@@ -72,12 +80,9 @@ public class AccountController {
 	@PostMapping("/ValidateToken")
 	public User getUserByToken(@RequestBody String token) {
 		try {
-			User user = null;
-			try {
-				user = udao.getUserByUsername(jwtUtil.extractUsername(token));
-			}catch(ExpiredJwtException e) {System.out.println("Jwt Expired:this print statement is located at accountController-78");}
-			return user;
-		} catch (Exception e) {e.printStackTrace();}
+			return udao.getUserByUsername(jwtUtil.extractUsername(token));
+		}catch(ExpiredJwtException e) {System.out.println("Jwt Expired:this print statement is located at accountController-78");}
+		catch(Exception e) {e.printStackTrace();}
 		return null;
 	}
 	

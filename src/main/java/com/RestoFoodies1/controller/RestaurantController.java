@@ -36,6 +36,30 @@ public class RestaurantController {
 		return "Server Error";
 	}
 	
+	@PostMapping("/get-restaurant/{rname}")
+	public Restaurant getRestaurantByRname(@PathVariable String rname) {
+		try {
+			return rdao.getRestaurantByRname(rname);
+		}catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
+	@GetMapping("/get-locations")
+	public List<String> getLocations(){
+		try {
+			return rdao.getLocations();
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
+	@PostMapping("/get-location-restaurants")
+	public List<Restaurant> getRestaurantsByLocation(@RequestBody String location){
+		try {
+			return rdao.getRestaurantsByLocation(location);
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
 	@PostMapping("/restaurants")
 	public List<Restaurant> getAllRestaurants(@RequestBody String username){
 		try {
@@ -62,10 +86,18 @@ public class RestaurantController {
 		return null;
 	}
 	
-	@PostMapping("/delete-restaurant/{rid}")
-	public String deleteRestaurantByRid(@PathVariable int rid,@RequestBody String username) {
+	@PostMapping("/get-user-restaurant")
+	public Restaurant getRestaurantByUsername(@RequestBody String username) {
 		try {
-			return rdao.deleteRestaurant(rid,username);
+			return rdao.getRestaurantByUsername(username);
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
+	@PostMapping("/delete-restaurant/{rid}")
+	public String deleteRestaurantByRid(@PathVariable int rid) {
+		try {
+			return rdao.deleteRestaurant(rid);
 		} catch (Exception e) {e.printStackTrace();}
 		return "Failure";
 	}
@@ -98,11 +130,10 @@ public class RestaurantController {
 	
 	@PostMapping("/get-restaurant-categories")
 	public List<Category> getRestaurantCategories(@RequestBody int rid){
-		List<Category> list = new ArrayList<Category>();
 		try {
-			list = rdao.getRestaurantCategories(rid);
+			return rdao.getRestaurantCategories(rid);
 		} catch (Exception e) {e.printStackTrace();}
-		return list;
+		return null;
 	}
 	
 	@PostMapping("/get-food-items/{rid}")
@@ -129,6 +160,19 @@ public class RestaurantController {
 			if(!f.exists()) {
 				f.mkdir();
 			}
+			try {
+				file.transferTo(f);
+			}catch(FileUploadException e){}catch(IOException e){}catch(Exception e){e.printStackTrace();return "Failure in storing image.";}
+			return "Success";
+		} catch (Exception e) {e.printStackTrace();}
+		return "Failure";
+	}	
+	
+	@PostMapping("/add-restaurant-profile")
+	public String addRestaurantProfile(@RequestParam("file") MultipartFile file) {
+		File f = new File(imageLocation+"restaurants\\"+file.getOriginalFilename());
+		try {
+			if(!f.exists())f.mkdir();
 			try {
 				file.transferTo(f);
 			}catch(FileUploadException e){}catch(IOException e){}catch(Exception e){e.printStackTrace();return "Failure in storing image.";}
@@ -207,6 +251,14 @@ public class RestaurantController {
 			return rdao.deleteItem(fid);
 		} catch (Exception e) {e.printStackTrace();}
 		return "Failure";
+	}
+	
+	@PostMapping("/get-restaurant-available-items/{rid}")
+	public List<Food_Item> getRestaurantAvailableItems(@PathVariable int rid){
+		try {
+			return rdao.getRestaurantAvailableItems(rid);
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
 	}
 	
 	@PostMapping("/get-available-restaurant-items")

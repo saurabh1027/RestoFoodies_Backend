@@ -15,6 +15,13 @@ public class UserDao {
 		this.con = con;
 	}
 	
+	public boolean isLoggedIn(String username) {
+		try {
+			return (this.getUserByUsername(username)==null)?false:true;
+		} catch (Exception e) {e.printStackTrace();}
+		return false;
+	}
+	
 	public JwtUser authenticateUser(User user) {
 		JwtUser jwt = new JwtUser("","Customer","Database Error");
 		try {
@@ -60,15 +67,11 @@ public class UserDao {
 	}
 
 	public User getUserByUsername(String username) {
-		User user;
 		try {
 			PreparedStatement pstmt = con.prepareStatement("select * from user where username = ?");
 			pstmt.setString(1, username);
 			ResultSet rst = pstmt.executeQuery();
-			if(rst.next()) {
-				user = new User(rst.getInt(1), rst.getString("username"), rst.getString("password"), rst.getString("fullname"), rst.getString("role"), rst.getString("email"), rst.getString("city"), rst.getString("address"), rst.getString("profile"));
-				return user;
-			}
+			if(rst.next())return new User(rst.getInt(1), rst.getString("username"), rst.getString("password"), rst.getString("fullname"), rst.getString("role"), rst.getString("email"), rst.getString("address"), rst.getString("profile"));
 		}catch (Exception e) {e.printStackTrace();}
 		return null;
 	}

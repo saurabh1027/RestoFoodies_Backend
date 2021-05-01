@@ -24,7 +24,7 @@ public class BasketDao {
 			pstmt.setString(1, username);
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()) {
-				Order order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("username"));
+				Order order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("contact"), rst.getString("username"));
 				list.add(order);
 			}
 		} catch (Exception e) {e.printStackTrace();}
@@ -72,7 +72,7 @@ public class BasketDao {
 			pstmt.setString(2, username);
 			ResultSet rst = pstmt.executeQuery();
 			if(rst.next()) {
-				return new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("username"));
+				return new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("contact"), rst.getString("username"));
 			}
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
@@ -177,7 +177,7 @@ public class BasketDao {
 			pstmt.setInt(1, oid);
 			ResultSet rst = pstmt.executeQuery();
 			if(rst.next()) {
-				order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("username"));
+				order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("contact"), rst.getString("username"));
 				if(order.getStatus().trim().equals("Placed"))
 					return "Order has been placed already!";
 				pstmt = con.prepareStatement("select * from added_items where oid=? and fid=?");
@@ -238,36 +238,36 @@ public class BasketDao {
 		return "Database Error";
 	}
 	
-	public List<Order> getPlacedOrdersOfRestaurant(int rid){
-		List<Order> o_list = new ArrayList<Order>();
-		List<Food_Item> f_list = new ArrayList<Food_Item>();
-		List<Integer> oids = new ArrayList<Integer>();
-		PreparedStatement pstmt = null;
-		ResultSet rst = null;
-		try {
-			f_list = this.getItemsOfRestaurant(rid);
-			for(int i=0;i<f_list.size();i++) {
-				if(!(f_list.get(i).getStatus().equals("Available")))continue;
-				pstmt = con.prepareStatement("select * from added_items where fid=?");
-				pstmt.setInt(1, f_list.get(i).getFid());
-				rst = pstmt.executeQuery();
-				while(rst.next()) {
-					if(!oids.contains(rst.getInt("oid"))) {
-						oids.add(rst.getInt("oid"));
-					}
-				}
-			}
-			for(int i=0;i<oids.size();i++) {
-				pstmt = con.prepareStatement("select * from orders where oid = ? and status='Placed'");
-				pstmt.setInt(1, oids.get(i));
-				rst = pstmt.executeQuery();
-				if(rst.next()) {
-					Order order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("username"));
-					o_list.add(order);
-				}
-			}
-			return o_list;
-		} catch (Exception e) {e.printStackTrace();}
+	public List<Order> getPlacedOrdersOfBranch(String branch){
+//		List<Order> o_list = new ArrayList<Order>();
+//		List<Food_Item> f_list = new ArrayList<Food_Item>();
+//		List<Integer> oids = new ArrayList<Integer>();
+//		PreparedStatement pstmt = null;
+//		ResultSet rst = null;
+//		try {
+//			f_list = this.getItemsOfRestaurant(rid);
+//			for(int i=0;i<f_list.size();i++) {
+//				if(!(f_list.get(i).getStatus().equals("Available")))continue;
+//				pstmt = con.prepareStatement("select * from added_items where fid=?");
+//				pstmt.setInt(1, f_list.get(i).getFid());
+//				rst = pstmt.executeQuery();
+//				while(rst.next()) {
+//					if(!oids.contains(rst.getInt("oid"))) {
+//						oids.add(rst.getInt("oid"));
+//					}
+//				}
+//			}
+//			for(int i=0;i<oids.size();i++) {
+//				pstmt = con.prepareStatement("select * from orders where oid = ? and status='Placed'");
+//				pstmt.setInt(1, oids.get(i));
+//				rst = pstmt.executeQuery();
+//				if(rst.next()) {
+//					Order order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("username"));
+//					o_list.add(order);
+//				}
+//			}
+//			return o_list;
+//		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}
 	
