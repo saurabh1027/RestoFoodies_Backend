@@ -6,6 +6,7 @@ select * from restaurant;
 select * from category;
 select * from food_item;
 select * from orders;
+select * from order1;
 select * from added_items;
 select * from list;
 
@@ -71,4 +72,14 @@ create table list(
 lid int primary key auto_increment,
 oids text,
 rid int references restaurant(rid)
+);
+create table order1(
+oid int primary key auto_increment,
+recipient_name varchar(50) not null,
+destination varchar(50) not null,
+contact varchar(50) not null,
+status varchar(50) not null default 'Placed',
+items text,
+price float,
+rname varchar(50) not null
 );

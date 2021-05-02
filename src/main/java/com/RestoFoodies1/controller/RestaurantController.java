@@ -36,6 +36,14 @@ public class RestaurantController {
 		return "Server Error";
 	}
 	
+	@PostMapping("/get-items-by-fids")
+	public List<Food_Item> getItemsByFids(@RequestBody List<Integer> fids){
+		try {
+			return rdao.getItemsByFids(fids);
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
 	@PostMapping("/get-restaurant/{rname}")
 	public Restaurant getRestaurantByRname(@PathVariable String rname) {
 		try {

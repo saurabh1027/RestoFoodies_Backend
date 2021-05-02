@@ -19,6 +19,22 @@ public class RestaurantDao {
 		this.con = con;
 	}
 	
+	public List<Food_Item> getItemsByFids(List<Integer> fids){
+		List<Food_Item> list = new ArrayList<Food_Item>();
+		try {
+			for(int i=0;i<fids.size();i++) {
+				PreparedStatement pstmt = con.prepareStatement("select * from food_item where fid = ?");
+				pstmt.setInt(1, fids.get(i));
+				ResultSet rst = pstmt.executeQuery();
+				if(rst.next()) {
+					list.add(new Food_Item(rst.getInt("fid"), rst.getString("fname"), rst.getDouble("price"), rst.getString("pic"), rst.getInt("quantity"), rst.getString("ingredients"), rst.getString("description"), rst.getBoolean("vegeterian"), rst.getString("ratings"), rst.getLong("ratio"), rst.getString("keywords"), rst.getString("status"), rst.getString("cname"), rst.getInt("rid")));
+				}
+			}
+			return list;
+		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
 	public Restaurant getRestaurantByRname(String rname) {
 		try {
 			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where name =?");
@@ -433,6 +449,7 @@ public class RestaurantDao {
 		return "Database Error";
 	}
 	
+//	Same method available in basketdao
 	public String updateItem(Food_Item item) {
 		try {
 			PreparedStatement pstmt = con.prepareStatement("update food_item set fname=?,price=?,pic=?,quantity=?,ingredients=?,description=?,vegeterian=?,keywords=?,status=?,cname=? where fid=?");

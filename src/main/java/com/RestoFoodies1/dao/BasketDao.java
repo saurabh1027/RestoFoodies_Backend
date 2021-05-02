@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.RestoFoodies1.model.Food_Item;
 import com.RestoFoodies1.model.Order;
+import com.RestoFoodies1.model.Order1;
 
 public class BasketDao {
 	Connection con = null;
@@ -148,13 +149,18 @@ public class BasketDao {
 		return "Database Error";
 	}
 	
-	public String placeOrder(int oid) {
+	public String placeOrder(Order1 order) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("update orders set status = ? where oid=?");
-			pstmt.setString(1, "Placed");
-			pstmt.setInt(2, oid);
-			int i = pstmt.executeUpdate();
-			return (i==1)?"Success":"Failed to place order.";
+			PreparedStatement pstmt = con.prepareStatement("insert into order1(recipient_name,destination,contact,status,items,price,branch,rname) values(?,?,?,?,?,?,?,?)");
+			pstmt.setString(1, order.getRecipient_name());
+			pstmt.setString(2, order.getDestination());
+			pstmt.setString(3, order.getContact());
+			pstmt.setString(4, order.getStatus());
+			pstmt.setString(5, order.getItems());
+			pstmt.setFloat(6, order.getPrice());
+			pstmt.setString(7, order.getBranch());
+			pstmt.setString(8, order.getRname());
+			return (pstmt.executeUpdate()==1)?"Success":"Failed to place order.";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
@@ -238,37 +244,52 @@ public class BasketDao {
 		return "Database Error";
 	}
 	
-	public List<Order> getPlacedOrdersOfBranch(String branch){
-//		List<Order> o_list = new ArrayList<Order>();
-//		List<Food_Item> f_list = new ArrayList<Food_Item>();
-//		List<Integer> oids = new ArrayList<Integer>();
-//		PreparedStatement pstmt = null;
-//		ResultSet rst = null;
-//		try {
-//			f_list = this.getItemsOfRestaurant(rid);
-//			for(int i=0;i<f_list.size();i++) {
-//				if(!(f_list.get(i).getStatus().equals("Available")))continue;
-//				pstmt = con.prepareStatement("select * from added_items where fid=?");
-//				pstmt.setInt(1, f_list.get(i).getFid());
-//				rst = pstmt.executeQuery();
-//				while(rst.next()) {
-//					if(!oids.contains(rst.getInt("oid"))) {
-//						oids.add(rst.getInt("oid"));
-//					}
-//				}
-//			}
-//			for(int i=0;i<oids.size();i++) {
-//				pstmt = con.prepareStatement("select * from orders where oid = ? and status='Placed'");
-//				pstmt.setInt(1, oids.get(i));
-//				rst = pstmt.executeQuery();
-//				if(rst.next()) {
-//					Order order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("username"));
-//					o_list.add(order);
-//				}
-//			}
-//			return o_list;
-//		} catch (Exception e) {e.printStackTrace();}
+	public List<Order1> getRestaurantPlacedOrdersByBranch(String branch,String rname){
+		List<Order1> list = new ArrayList<Order1>();
+		try {
+			PreparedStatement pstmt = con.prepareStatement("select * from order1 where rname=? and branch=?");
+			pstmt.setString(1, rname);
+			pstmt.setString(2, branch);
+			ResultSet rst = pstmt.executeQuery();
+			while(rst.next()) {
+				list.add(new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
+						rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname")));
+			}
+			return list;
+		} catch (Exception e) {e.printStackTrace();}
 		return null;
+	}
+	
+	public String updateItems(List<Food_Item> list) {
+		try {
+			for(int i=0;i<list.size();i++) {
+				if(!this.updateItem(list.get(i)).equals("Success"))
+					return "Unable to update all items.";
+			}
+			return "Success";
+		} catch (Exception e) {e.printStackTrace();}
+		return "Database Error";
+	}
+	
+//	Same method available in restaurantdao
+	public String updateItem(Food_Item item) {
+		try {
+			PreparedStatement pstmt = con.prepareStatement("update food_item set fname=?,price=?,pic=?,quantity=?,ingredients=?,description=?,vegeterian=?,keywords=?,status=?,cname=? where fid=?");
+			pstmt.setString(1, item.getFname());
+			pstmt.setDouble(2, item.getPrice());
+			pstmt.setString(3, item.getPic());
+			pstmt.setInt(4, item.getQuantity());
+			pstmt.setString(5, item.getIngredients());
+			pstmt.setString(6, item.getDescription());
+			pstmt.setBoolean(7, item.isVegeterian());
+			pstmt.setString(8, item.getKeywords());
+			pstmt.setString(9, item.getStatus());
+			pstmt.setString(10, item.getCname());
+			pstmt.setInt(11, item.getFid());
+			int i=pstmt.executeUpdate();
+			return (i==1)?"Success":"Unable to update.";
+		} catch (Exception e) {e.printStackTrace();}
+		return "Database Error";
 	}
 	
 	public List<Food_Item> getItemsOfRestaurant(int rid){

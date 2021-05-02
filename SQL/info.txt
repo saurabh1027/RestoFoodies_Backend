@@ -1,0 +1,10 @@
+---
+Checkpoints on Git Files
+M = modified
+A = added
+D = deleted
+R = renamed
+C = copied
+U = updated but unmerged
+---
+

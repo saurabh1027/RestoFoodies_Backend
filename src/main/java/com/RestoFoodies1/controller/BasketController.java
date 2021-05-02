@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.RestoFoodies1.dao.BasketDao;
 import com.RestoFoodies1.model.Food_Item;
 import com.RestoFoodies1.model.Order;
+import com.RestoFoodies1.model.Order1;
 import com.RestoFoodies1.util.DBConnection;
 
 @CrossOrigin
@@ -67,9 +68,9 @@ public class BasketController {
 	}
 	
 	@PostMapping("/place-order")
-	public String placeOrder(@RequestBody int oid) {
+	public String placeOrder(@RequestBody Order1 order) {
 		try {
-			return bdao.placeOrder(oid);
+			return bdao.placeOrder(order);
 		} catch (Exception e) {e.printStackTrace();}
 		return "Failure";
 	}
@@ -90,10 +91,18 @@ public class BasketController {
 		return "Failure";
 	}
 	
-	@PostMapping("/get-restaurant-placed-orders")
-	public List<Order> getPlacedOrdersOfBranch(@RequestBody String branch){
+	@PostMapping("/update-items")
+	public String updateItems(@RequestBody List<Food_Item> items){
 		try {
-			return bdao.getPlacedOrdersOfBranch(branch);
+			return bdao.updateItems(items);
+		} catch (Exception e) {e.printStackTrace();}
+		return "Failure";
+	}
+	
+	@PostMapping("/get-restaurant-placed-orders/{rname}")
+	public List<Order1> getRestaurantPlacedOrdersByBranch(@PathVariable String rname,@RequestBody String branch){
+		try {
+			return bdao.getRestaurantPlacedOrdersByBranch(branch,rname);
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}
