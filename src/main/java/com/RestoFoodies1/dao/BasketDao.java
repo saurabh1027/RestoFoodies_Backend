@@ -247,9 +247,10 @@ public class BasketDao {
 	public List<Order1> getRestaurantPlacedOrdersByBranch(String branch,String rname){
 		List<Order1> list = new ArrayList<Order1>();
 		try {
-			PreparedStatement pstmt = con.prepareStatement("select * from order1 where rname=? and branch=?");
+			PreparedStatement pstmt = con.prepareStatement("select * from order1 where rname=? and branch=? and status=?");
 			pstmt.setString(1, rname);
 			pstmt.setString(2, branch);
+			pstmt.setString(3,"Placed");
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()) {
 				list.add(new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
@@ -309,10 +310,9 @@ public class BasketDao {
 	
 	public String rejectOrder(int oid) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("update orders set status='Rejected' where oid=?");
+			PreparedStatement pstmt = con.prepareStatement("update order1 set status='Rejected' where oid=?");
 			pstmt.setInt(1, oid);
-			int i=pstmt.executeUpdate();
-			return (i==1)?"Success":"Failed to reject order.";
+			return (pstmt.executeUpdate()==1)?"Success":"Failed to reject order.";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}

@@ -7,10 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.RestoFoodies1.model.Category;
-import com.RestoFoodies1.model.Food_Item;
-import com.RestoFoodies1.model.Order;
-import com.RestoFoodies1.model.Restaurant;
+import com.RestoFoodies1.model.*;
 
 public class RestaurantDao {
 	Connection con = null;
@@ -511,57 +508,63 @@ public class RestaurantDao {
 	}
 	
 	public String addOrderToList(int oid,int rid) {
+        try {
+            PreparedStatement pstmt = con.prepareStatement("select * from list where rid=?");
+            pstmt.setInt(1, rid);
+            ResultSet rst = pstmt.executeQuery();
+            if (rst.next()) {
+                pstmt = con.prepareStatement("update list set oids = ? where rid=?");
+                pstmt.setString(1, rst.getString("oids") + oid + ",");
+                pstmt.setInt(2, rid);
+                if (pstmt.executeUpdate() != 1)
+                    return "Unable to update record.";
+            } else {
+                PreparedStatement pstmt1 = con.prepareStatement("insert into list(oids,rid) values(?,?)");
+                pstmt1.setString(1, oid + ",");
+                pstmt1.setInt(2, rid);
+                if (pstmt1.executeUpdate() != 1)
+                    return "Unable to create record.";
+            }
+            pstmt = con.prepareStatement("update order1 set status = 'Accepted' where oid=?");
+            pstmt.setInt(1,oid);
+            return (pstmt.executeUpdate()==1)?"Success":"Unable to add to list";
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Database Error";
+    }
+	
+	public List<Order1> getListOrdersOfRestaurantByBranch(int rid,String branch){
+		String oids = "";
+		List<Order1> list = new ArrayList<Order1>();
 		try {
 			PreparedStatement pstmt = con.prepareStatement("select * from list where rid=?");
-			pstmt.setInt(1, rid);
+			pstmt.setInt(1,rid);
 			ResultSet rst = pstmt.executeQuery();
-			if(rst.next()) {
-				pstmt = con.prepareStatement("update list set oids=? where rid=?");
-				pstmt.setString(1, rst.getString("oids")+oid+",");
-				pstmt.setInt(2, rid);
-				if(pstmt.executeUpdate()!=1)return "Failed to insert order.";
-			}else {
-				PreparedStatement pstmt1 = con.prepareStatement("insert into list(oids,rid) values(?,?)");
-				pstmt1.setString(1, oid+",");
-				pstmt1.setInt(2, rid);
-				if(pstmt1.executeUpdate()!=1)return "Failed to create list.";
-			}
-			pstmt = con.prepareStatement("update orders set status='Approved' where oid = ?");
-			pstmt.setInt(1, oid);
-			return (pstmt.executeUpdate()==1)?"Success":"Failed to update status.";
-		} catch (Exception e) {e.printStackTrace();}
-		return "Database Error";
-	}
-	
-	public List<Order> getListOrdersOfRestaurant(int rid){
-		List<Order> list = new ArrayList<Order>();
-		String oids = "";
-		String str = "";
-		List<Integer> oid = new ArrayList<Integer>();
-		try {
-			PreparedStatement pstmt = con.prepareStatement("select oids from list where rid=?");
-			pstmt.setInt(1, rid);
-			ResultSet rst = pstmt.executeQuery();
-			if(rst.next())oids = rst.getString("oids");
-			for(int i=0;i<oids.length();i++) {
-				if(oids.charAt(i)!=',') {
-					str = str + oids.charAt(i);
-				}else {
-					oid.add(Integer.parseInt(str));
-					str="";
+			if(rst.next()){
+				oids = rst.getString("oids");
+				List<Integer> oid = new ArrayList<Integer>();
+				String str="";
+				for(int i=0;i<oids.length();i++){
+					if(oids.charAt(i)==','){
+						oid.add(Integer.parseInt(str));
+						str="";
+					}else{
+						str += oids.charAt(i);
+					}
 				}
-			}
-			for(int i=0;i<oid.size();i++) {
-				pstmt = con.prepareStatement("select * from orders where oid=?");
-				pstmt.setInt(1, oid.get(i));
-				rst = pstmt.executeQuery();
-				if(rst.next()) {
-					Order order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("contact"), rst.getString("username"));
-					list.add(order);
+				for(int i=0;i<oid.size();i++){
+					PreparedStatement pstmt1 = con.prepareStatement("select * from order1 where oid = ? and branch = ? and status='Accepted'");
+					pstmt1.setInt(1,oid.get(i));
+					pstmt1.setString(2,branch);
+					ResultSet rs = pstmt1.executeQuery();
+					if(rs.next()){
+						list.add(new Order1(rs.getInt("oid"),rs.getString("recipient_name"),rs.getString("destination"),rs.getString("contact"),rs.getString("status"),rs.getString("items"),rs.getFloat("price"),rs.getString("branch"),rs.getString("rname") ));
+					}
 				}
+				return list;
 			}
-			return list;
-		} catch (Exception e) {e.printStackTrace();}
+		}catch (Exception e){e.printStackTrace();}
 		return null;
 	}
 	

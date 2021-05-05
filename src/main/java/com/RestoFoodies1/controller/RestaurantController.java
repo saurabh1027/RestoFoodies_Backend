@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.RestoFoodies1.model.*;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.RestoFoodies1.dao.RestaurantDao;
-import com.RestoFoodies1.model.Category;
-import com.RestoFoodies1.model.Food_Item;
-import com.RestoFoodies1.model.Order;
-import com.RestoFoodies1.model.Restaurant;
 import com.RestoFoodies1.util.DBConnection;
 
 @RestController
@@ -277,18 +274,18 @@ public class RestaurantController {
 		return null;
 	}
 	
-	@PostMapping("/add-list-order")
-	public String addOrderToList(@RequestBody String oidrid) {
+	@PostMapping("/add-list-order/{rid}")
+	public String addOrderToList(@RequestBody int oid,@PathVariable int rid) {
 		try {
-			return rdao.addOrderToList(Integer.parseInt(oidrid.substring(0, oidrid.indexOf(","))),Integer.parseInt(oidrid.substring(oidrid.indexOf(",")+1, oidrid.length())));
+			return rdao.addOrderToList(oid,rid);
 		} catch (Exception e) {e.printStackTrace();}
 		return "Failure";
 	}
 	
-	@PostMapping("/get-list-orders")
-	public List<Order> getListOrdersOfRestaurant(@RequestBody int rid){
+	@PostMapping("/get-restaurant-list-orders/{rid}")
+	public List<Order1> getListOrdersOfRestaurantByBranch(@RequestBody String branch,@PathVariable int rid){
 		try {
-			return rdao.getListOrdersOfRestaurant(rid);
+			return rdao.getListOrdersOfRestaurantByBranch(rid,branch);
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}
