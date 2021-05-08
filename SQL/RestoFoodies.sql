@@ -16,8 +16,10 @@ username varchar(50) not null unique,
 password varchar(50) not null,
 fullname varchar(50) not null,
 role varchar(50) default "Customer",
+contact varchar(50) not null,
 email varchar(50),
-address text,
+location varchar(100),
+latlng varchar(100) not null,
 profile varchar(50) not null default "user.jpg"
 );
 create table restaurant(
@@ -28,8 +30,6 @@ email varchar(50),
 branch varchar(100) not null,
 categories text,
 latlng varchar(100) not null,
-opening_time varchar(50) not null,
-closing_time varchar(50) not null,
 profile varchar(100),
 username varchar(50) not null
 );
@@ -81,5 +81,6 @@ contact varchar(50) not null,
 status varchar(50) not null default 'Placed',
 items text,
 price float,
+branch text,
 rname varchar(50) not null
 );

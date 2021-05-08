@@ -316,5 +316,23 @@ public class BasketDao {
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
+
+	public String updateOrder(Order1 order){
+	try{
+		PreparedStatement pstmt = con.prepareStatement("update order1 set recipient_name=?,destination=?," +
+				"contact=?,status=?,items=?,price=?,branch=?,rname=? where oid=?");
+		pstmt.setString(1,order.getRecipient_name());
+		pstmt.setString(2,order.getDestination());
+		pstmt.setString(3,order.getContact());
+		pstmt.setString(4,order.getStatus());
+		pstmt.setString(5,order.getItems());
+		pstmt.setFloat(6,order.getPrice());
+		pstmt.setString(7,order.getBranch());
+		pstmt.setString(8,order.getRname());
+		pstmt.setInt(9,order.getOid());
+		return (pstmt.executeUpdate()==1) ? "Success" : "Unable to update order.";
+	}catch(Exception e){e.printStackTrace();}
+		return "Database Error";
+	}
 	
 }

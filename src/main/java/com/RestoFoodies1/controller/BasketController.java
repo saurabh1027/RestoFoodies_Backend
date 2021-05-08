@@ -115,4 +115,12 @@ public class BasketController {
 		return "Failure";
 	}
 	
+	@PostMapping("/update-order")
+    public String updateOrder(@RequestBody Order1 order){
+	    try{
+	        return bdao.updateOrder(order);
+        }catch(Exception e){e.printStackTrace();}
+	    return "Failure";
+    }
+	
 }

@@ -38,7 +38,7 @@ public class RestaurantDao {
 			pstmt.setString(1, rname);
 			ResultSet rst = pstmt.executeQuery();
 			if(rst.next()) {
-				return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("opening_time"), rst.getString("closing_time"), rst.getString("username"));
+				return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
 			}
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
@@ -49,7 +49,7 @@ public class RestaurantDao {
 			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where username =?");
 			pstmt.setString(1, username);
 			ResultSet rst = pstmt.executeQuery();
-			if(rst.next())return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("opening_time"), rst.getString("closing_time"), rst.getString("username"));
+			if(rst.next())return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}
@@ -94,7 +94,7 @@ public class RestaurantDao {
 					}
 				}
 				if(branches.contains(location)) {
-					Restaurant rest = new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("opening_time"), rst.getString("closing_time"), rst.getString("username"));
+					Restaurant rest = new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
 					list.add(rest);
 				}
 			}
@@ -109,7 +109,7 @@ public class RestaurantDao {
 			pstmt.setInt(1, rid);
 			ResultSet rst = pstmt.executeQuery();
 			if(rst.next()) {
-				Restaurant rest = new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("opening_time"), rst.getString("closing_time"), rst.getString("username"));
+				Restaurant rest = new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
 				return rest;
 			}
 		} catch (Exception e) {e.printStackTrace();}
@@ -136,15 +136,14 @@ public class RestaurantDao {
 	
 	public String addRestaurant(Restaurant rest) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("insert into restaurant(name,contact,email,branch,latlng,opening_time,closing_time,username) values(?,?,?,?,?,?,?,?)");
+			PreparedStatement pstmt = con.prepareStatement("insert into restaurant(name,contact,email,branch,latlng,profile,username) values(?,?,?,?,?,?,?)");
 			pstmt.setString(1, rest.getName());
 			pstmt.setString(2, rest.getContact());
 			pstmt.setString(3, rest.getEmail());
 			pstmt.setString(4, rest.getBranch());
 			pstmt.setString(5, rest.getLatlng());
-			pstmt.setString(6, rest.getOpening_time());
-			pstmt.setString(7, rest.getClosing_time());
-			pstmt.setString(8, rest.getUsername());
+			pstmt.setString(6, rest.getProfile());
+			pstmt.setString(7, rest.getUsername());
 			if(pstmt.executeUpdate()==1) {
 				return "Restaurant added successfully";
 			}else {
@@ -161,7 +160,7 @@ public class RestaurantDao {
 			pstmt.setString(1, username);
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()) {
-				Restaurant rest = new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("opening_time"), rst.getString("closing_time"), rst.getString("username"));
+				Restaurant rest = new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
 				list.add(rest);
 			}
 			return list;
@@ -191,7 +190,7 @@ public class RestaurantDao {
 			pstmt.setString(3, r.getUsername());
 			ResultSet rst = pstmt.executeQuery();
 			if(rst.next()) {
-				return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("opening_time"), rst.getString("closing_time"), rst.getString("username"));
+				return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
 			}
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
@@ -344,15 +343,13 @@ public class RestaurantDao {
 	
 	public String updateRestaurant(Restaurant rest) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("update restaurant set name=?,contact=?,email=?,branch=?,latlng=?,opening_time=?,closing_time=? where rid=?");
+			PreparedStatement pstmt = con.prepareStatement("update restaurant set name=?,contact=?,email=?,branch=?,latlng=? where rid=?");
 			pstmt.setString(1, rest.getName());
 			pstmt.setString(2, rest.getContact());
 			pstmt.setString(3, rest.getEmail());
 			pstmt.setString(4, rest.getBranch());
 			pstmt.setString(5, rest.getLatlng());
-			pstmt.setString(6, rest.getOpening_time());
-			pstmt.setString(7, rest.getClosing_time());
-			pstmt.setInt(8, rest.getRid());
+			pstmt.setInt(6, rest.getRid());
 			int i = pstmt.executeUpdate();
 			return (i==1)?"Success":"Failed to update restaurant";
 		} catch (Exception e) {e.printStackTrace();}

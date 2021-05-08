@@ -8,11 +8,10 @@ public class Restaurant {
 	private String branch;
 	private String categories;
 	private String latlng = "0.00/0.00";
-	private String opening_time = "10:00";
-	private String closing_time = "22:00";
 	private String username;
+    private String profile;
 	public Restaurant(int rid, String name, String contact, String email, String branch, String categories,
-			String latlng, String opening_time, String closing_time, String username) {
+			String latlng, String profile,String username) {
 		super();
 		this.rid = rid;
 		this.name = name;
@@ -21,12 +20,11 @@ public class Restaurant {
 		this.branch = branch;
 		this.categories = categories;
 		this.latlng = latlng;
-		this.opening_time = opening_time;
-		this.closing_time = closing_time;
+        this.profile = profile;
 		this.username = username;
 	}
-	public Restaurant(String name, String contact, String email, String branch, String categories, String latlng,
-			String opening_time, String closing_time, String username) {
+	public Restaurant(String name, String contact, String email, String branch, String categories, String profile , String latlng,
+			String username) {
 		super();
 		this.name = name;
 		this.contact = contact;
@@ -34,8 +32,7 @@ public class Restaurant {
 		this.branch = branch;
 		this.categories = categories;
 		this.latlng = latlng;
-		this.opening_time = opening_time;
-		this.closing_time = closing_time;
+        this.profile = profile;
 		this.username = username;
 	}
 	public Restaurant() {
@@ -83,18 +80,10 @@ public class Restaurant {
 	public void setLatlng(String latlng) {
 		this.latlng = latlng;
 	}
-	public String getOpening_time() {
-		return opening_time;
-	}
-	public void setOpening_time(String opening_time) {
-		this.opening_time = opening_time;
-	}
-	public String getClosing_time() {
-		return closing_time;
-	}
-	public void setClosing_time(String closing_time) {
-		this.closing_time = closing_time;
-	}
+    public String getProfile() {
+        return profile;
+    }
+    public void setProfile(String profile) { this.profile = profile; }
 	public String getUsername() {
 		return username;
 	}
@@ -104,7 +93,7 @@ public class Restaurant {
 	@Override
 	public String toString() {
 		return "Restaurant [rid=" + rid + ", name=" + name + ", contact=" + contact + ", email=" + email + ", branch="
-				+ branch + ", categories=" + categories + ", latlng=" + latlng + ", opening_time=" + opening_time
-				+ ", closing_time=" + closing_time + ", username=" + username + "]";
+				+ branch + ", categories=" + categories + ", latlng=" + latlng + ", profile=" + profile
+				 + ", username=" + username + "]";
 	}
 }

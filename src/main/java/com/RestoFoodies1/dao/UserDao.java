@@ -46,22 +46,16 @@ public class UserDao {
 	
 	public String saveUser(User user) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("insert into user(username,password,fullname,role,email,address) values(?,?,?,?,?,?)");
+			PreparedStatement pstmt = con.prepareStatement("insert into user(username,password,fullname,role,contact,email,location,latlng) values(?,?,?,?,?,?,?,?)");
 			pstmt.setString(1, user.getUsername().trim());
 			pstmt.setString(2, user.getPassword().trim());
 			pstmt.setString(3, user.getFullname().trim());
 			pstmt.setString(4, user.getRole().trim());
-			pstmt.setString(5, user.getEmail().trim());
-			pstmt.setString(6, user.getAddress().trim());
-			int i = pstmt.executeUpdate();
-			if(i==1) {
-				if(!user.getRole().trim().equals("Customer"))return "Success";
-				pstmt = con.prepareStatement("insert into basket(username) values(?)");
-				pstmt.setString(1, user.getUsername());
-				i = pstmt.executeUpdate();
-				return (i==1) ? "Success":"Failed to add basket";
-			}
-			else return "Username Exists";
+			pstmt.setString(5, user.getContact().trim());
+			pstmt.setString(6, user.getEmail().trim());
+			pstmt.setString(7, user.getLocation().trim());
+			pstmt.setString(8, user.getLatlng().trim());
+			return (pstmt.executeUpdate()==1) ? "Success":"Username Exists";
 		}catch(Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
@@ -71,23 +65,24 @@ public class UserDao {
 			PreparedStatement pstmt = con.prepareStatement("select * from user where username = ?");
 			pstmt.setString(1, username);
 			ResultSet rst = pstmt.executeQuery();
-			if(rst.next())return new User(rst.getInt(1), rst.getString("username"), rst.getString("password"), rst.getString("fullname"), rst.getString("role"), rst.getString("email"), rst.getString("address"), rst.getString("profile"));
+			if(rst.next())return new User(rst.getInt("uid"), rst.getString("username"), rst.getString("password"), rst.getString("fullname"), rst.getString("role"), rst.getString("contact"), rst.getString("email"), rst.getString("location"), rst.getString("latlng"), rst.getString("profile"));
 		}catch (Exception e) {e.printStackTrace();}
 		return null;
 	}
 	
 	public String updateUser(User user) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("update user set password=?,fullname=?,role=?,email=?,address=?,profile=? where uid=?");
+			PreparedStatement pstmt = con.prepareStatement("update user set password=?,fullname=?,role=?,contact=?,email=?,location=?,latlng=?,profile=? where uid=?");
 			pstmt.setString(1, user.getPassword());
 			pstmt.setString(2, user.getFullname());
 			pstmt.setString(3, user.getRole());
-			pstmt.setString(4, user.getEmail());
-			pstmt.setString(5, user.getAddress());
-			pstmt.setString(6, user.getProfile());
-			pstmt.setInt(7, user.getUid());
-			int i = pstmt.executeUpdate();
-			return (i==1)?"Success":"Data updation failed!";
+			pstmt.setString(4, user.getContact());
+			pstmt.setString(5, user.getEmail());
+			pstmt.setString(6, user.getLocation());
+			pstmt.setString(7, user.getLatlng());
+			pstmt.setString(8, user.getProfile());
+			pstmt.setInt(9, user.getUid());
+			return (pstmt.executeUpdate()==1)?"Success":"Data updation failed!";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
