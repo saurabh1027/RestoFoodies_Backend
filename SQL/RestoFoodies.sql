@@ -25,8 +25,8 @@ profile varchar(50) not null default "user.jpg"
 create table restaurant(
 rid int primary key auto_increment,
 name varchar(100) not null unique,
-contact varchar(50),
-email varchar(50),
+contact varchar(50) not null,
+email varchar(50) not null,
 branch varchar(100) not null,
 categories text,
 latlng varchar(100) not null,

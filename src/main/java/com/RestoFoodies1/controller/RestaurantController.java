@@ -23,7 +23,8 @@ import com.RestoFoodies1.util.DBConnection;
 @CrossOrigin
 public class RestaurantController {
 	RestaurantDao rdao = new RestaurantDao(DBConnection.createConnection());
-	String imageLocation = "E:\\VS-Code\\Projects\\Angular\\RestoFoodies\\src\\assets\\images\\";
+	// String imageLocation = "E:\\VS-Code\\Projects\\Angular\\RestoFoodies\\src\\assets\\images\\";
+	String imageLocation = "home//sauru8887//Documents//Github//RestoFoodies//src//assets//images//";
 	
 	@PostMapping("/add-restaurant")
 	public String saveRestaurant(@RequestBody Restaurant restaurant) {
@@ -160,7 +161,7 @@ public class RestaurantController {
 	
 	@PostMapping("/add-food-item-pic")
 	public String addFoodItemPic(@RequestParam("file") MultipartFile file) {
-		File f = new File(imageLocation+"food_items\\"+file.getOriginalFilename());
+		File f = new File(imageLocation+"food_items//"+file.getOriginalFilename());
 		try {
 			if(!f.exists()) {
 				f.mkdir();
@@ -175,7 +176,7 @@ public class RestaurantController {
 	
 	@PostMapping("/add-restaurant-profile")
 	public String addRestaurantProfile(@RequestParam("file") MultipartFile file) {
-		File f = new File(imageLocation+"restaurants\\"+file.getOriginalFilename());
+		File f = new File(imageLocation+"restaurants//"+file.getOriginalFilename());
 		try {
 			if(!f.exists())f.mkdir();
 			try {

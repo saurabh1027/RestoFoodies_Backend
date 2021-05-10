@@ -343,13 +343,14 @@ public class RestaurantDao {
 	
 	public String updateRestaurant(Restaurant rest) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("update restaurant set name=?,contact=?,email=?,branch=?,latlng=? where rid=?");
+			PreparedStatement pstmt = con.prepareStatement("update restaurant set name=?,contact=?,email=?,branch=?,latlng=?,categories=? where rid=?");
 			pstmt.setString(1, rest.getName());
 			pstmt.setString(2, rest.getContact());
 			pstmt.setString(3, rest.getEmail());
 			pstmt.setString(4, rest.getBranch());
 			pstmt.setString(5, rest.getLatlng());
-			pstmt.setInt(6, rest.getRid());
+			pstmt.setString(6, rest.getCategories());
+			pstmt.setInt(7, rest.getRid());
 			int i = pstmt.executeUpdate();
 			return (i==1)?"Success":"Failed to update restaurant";
 		} catch (Exception e) {e.printStackTrace();}
@@ -424,11 +425,18 @@ public class RestaurantDao {
 	
 	public String addNewCategory(Category category) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("insert into category(cname,description) values(?,?)");
+			PreparedStatement pstmt = con.prepareStatement("select * from category where cname=?");
 			pstmt.setString(1, category.getCname());
-			pstmt.setString(2, category.getdescription());
-			int i = pstmt.executeUpdate();
-			return (i==1)?"Success":"Failed to add category";
+			ResultSet rst = pstmt.executeQuery();
+			if(rst.next()){
+				return "Already present!";
+			}else{
+				pstmt = con.prepareStatement("insert into category(cname,description) values(?,?)");
+				pstmt.setString(1, category.getCname());
+				pstmt.setString(2, category.getdescription());
+				int i = pstmt.executeUpdate();
+				return (i==1)?"Success":"Failed to add category";
+			}
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
