@@ -30,12 +30,15 @@ public class AccountController {
 	private JwtUtil jwtUtil;
 	String imageLocation= "E:\\VS-Code\\Projects\\Angular\\RestoFoodies\\src\\assets\\images\\";
 	
-	@PostMapping("/isLoggedIn")
-	public boolean isLoggedIn(@RequestBody String token) {
+	// In use - start
+	
+	@PostMapping("/ValidateToken")
+	public User getUserByToken(@RequestBody String token) {
 		try {
-			return udao.isLoggedIn(this.jwtUtil.extractUsername(token));
-		} catch (Exception e) {e.printStackTrace();}
-		return false;
+			return udao.getUserByUsername(jwtUtil.extractUsername(token));
+		}catch(ExpiredJwtException e) {System.out.println("Jwt Expired:this print statement is located at accountController-78");}
+		catch(Exception e) {e.printStackTrace();}
+		return null;
 	}
 	
 	@PostMapping("/authenticate-user")
@@ -49,41 +52,6 @@ public class AccountController {
 			}
 		}catch(Exception e) {e.printStackTrace();}
 		return jwt;
-	}
-	
-	@PostMapping("/save-user")
-	public JwtUser saveUser(@RequestBody User user) {
-		JwtUser jwt = new JwtUser();
-		String message="";
-		try {
-			message = udao.saveUser(user);
-			if(message.trim()=="Success") {
-				UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername().trim(),user.getPassword().trim(),new ArrayList<>());
-				return new JwtUser(jwtUtil.generateToken(userDetails), user.getRole().trim(), "Success");
-			}else return new JwtUser("","",message.trim());
-		}catch(Exception e) {e.printStackTrace();}
-		return jwt;
-	}
-	
-	@PostMapping("/get-user")
-	public User getUserProfile(@RequestBody String username) {
-		User user;
-		try {
-			user = udao.getUserByUsername(username.trim());
-			if(user!=null) {
-				return user;
-			}
-		}catch(Exception e) {e.printStackTrace();}
-		return null;
-	}
-	
-	@PostMapping("/ValidateToken")
-	public User getUserByToken(@RequestBody String token) {
-		try {
-			return udao.getUserByUsername(jwtUtil.extractUsername(token));
-		}catch(ExpiredJwtException e) {System.out.println("Jwt Expired:this print statement is located at accountController-78");}
-		catch(Exception e) {e.printStackTrace();}
-		return null;
 	}
 	
 	@PostMapping("/update-user")
@@ -109,6 +77,18 @@ public class AccountController {
 		return "Failure";
 	}
 	
+	@PostMapping("/get-user")
+	public User getUserProfile(@RequestBody String username) {
+		User user;
+		try {
+			user = udao.getUserByUsername(username.trim());
+			if(user!=null) {
+				return user;
+			}
+		}catch(Exception e) {e.printStackTrace();}
+		return null;
+	}
+	
 	@PostMapping("/delete-user")
 	public String deleteUser(@RequestBody String username) {
 		try {
@@ -117,4 +97,28 @@ public class AccountController {
 		return "Server Error";
 	}
 	
+	@PostMapping("/save-user")
+	public JwtUser saveUser(@RequestBody User user) {
+		JwtUser jwt = new JwtUser();
+		String message="";
+		try {
+			message = udao.saveUser(user);
+			if(message.trim()=="Success") {
+				UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername().trim(),user.getPassword().trim(),new ArrayList<>());
+				return new JwtUser(jwtUtil.generateToken(userDetails), user.getRole().trim(), "Success");
+			}else return new JwtUser("","",message.trim());
+		}catch(Exception e) {e.printStackTrace();}
+		return jwt;
+	}
+
+	// In use - end
+	
+	// @PostMapping("/isLoggedIn")
+	// public boolean isLoggedIn(@RequestBody String token) {
+	// 	try {
+	// 		return udao.isLoggedIn(this.jwtUtil.extractUsername(token));
+	// 	} catch (Exception e) {e.printStackTrace();}
+	// 	return false;
+	// }
+
 }

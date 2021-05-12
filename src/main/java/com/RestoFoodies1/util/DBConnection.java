@@ -11,7 +11,7 @@ public class DBConnection {
 			try {
 				Class.forName("com.mysql.cj.jdbc.Driver");
 			} catch (ClassNotFoundException e) {e.printStackTrace();}
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/RestoFoodies","root","root");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/RestoFoodies","username","username.1Password");
 		}catch (SQLException e) {e.printStackTrace();}
 		return con;
 	}

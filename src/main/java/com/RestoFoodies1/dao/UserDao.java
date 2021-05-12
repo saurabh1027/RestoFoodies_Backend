@@ -14,12 +14,17 @@ public class UserDao {
 		super();
 		this.con = con;
 	}
+
+	// In use - start
 	
-	public boolean isLoggedIn(String username) {
+	public User getUserByUsername(String username) {
 		try {
-			return (this.getUserByUsername(username)==null)?false:true;
-		} catch (Exception e) {e.printStackTrace();}
-		return false;
+			PreparedStatement pstmt = con.prepareStatement("select * from user where username = ?");
+			pstmt.setString(1, username);
+			ResultSet rst = pstmt.executeQuery();
+			if(rst.next())return new User(rst.getInt("uid"), rst.getString("username"), rst.getString("password"), rst.getString("fullname"), rst.getString("role"), rst.getString("contact"), rst.getString("email"), rst.getString("location"), rst.getString("latlng"), rst.getString("profile"));
+		}catch (Exception e) {e.printStackTrace();}
+		return null;
 	}
 	
 	public JwtUser authenticateUser(User user) {
@@ -42,32 +47,6 @@ public class UserDao {
 			}
 		}catch(Exception e) {e.printStackTrace();}
 		return jwt;
-	}
-	
-	public String saveUser(User user) {
-		try {
-			PreparedStatement pstmt = con.prepareStatement("insert into user(username,password,fullname,role,contact,email,location,latlng) values(?,?,?,?,?,?,?,?)");
-			pstmt.setString(1, user.getUsername().trim());
-			pstmt.setString(2, user.getPassword().trim());
-			pstmt.setString(3, user.getFullname().trim());
-			pstmt.setString(4, user.getRole().trim());
-			pstmt.setString(5, user.getContact().trim());
-			pstmt.setString(6, user.getEmail().trim());
-			pstmt.setString(7, user.getLocation().trim());
-			pstmt.setString(8, user.getLatlng().trim());
-			return (pstmt.executeUpdate()==1) ? "Success":"Username Exists";
-		}catch(Exception e) {e.printStackTrace();}
-		return "Database Error";
-	}
-
-	public User getUserByUsername(String username) {
-		try {
-			PreparedStatement pstmt = con.prepareStatement("select * from user where username = ?");
-			pstmt.setString(1, username);
-			ResultSet rst = pstmt.executeQuery();
-			if(rst.next())return new User(rst.getInt("uid"), rst.getString("username"), rst.getString("password"), rst.getString("fullname"), rst.getString("role"), rst.getString("contact"), rst.getString("email"), rst.getString("location"), rst.getString("latlng"), rst.getString("profile"));
-		}catch (Exception e) {e.printStackTrace();}
-		return null;
 	}
 	
 	public String updateUser(User user) {
@@ -96,5 +75,30 @@ public class UserDao {
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
+	
+	public String saveUser(User user) {
+		try {
+			PreparedStatement pstmt = con.prepareStatement("insert into user(username,password,fullname,role,contact,email,location,latlng) values(?,?,?,?,?,?,?,?)");
+			pstmt.setString(1, user.getUsername().trim());
+			pstmt.setString(2, user.getPassword().trim());
+			pstmt.setString(3, user.getFullname().trim());
+			pstmt.setString(4, user.getRole().trim());
+			pstmt.setString(5, user.getContact().trim());
+			pstmt.setString(6, user.getEmail().trim());
+			pstmt.setString(7, user.getLocation().trim());
+			pstmt.setString(8, user.getLatlng().trim());
+			return (pstmt.executeUpdate()==1) ? "Success":"Username Exists";
+		}catch(Exception e) {e.printStackTrace();}
+		return "Database Error";
+	}
+
+	// In use - end
+	
+	// public boolean isLoggedIn(String username) {
+	// 	try {
+	// 		return (this.getUserByUsername(username)==null)?false:true;
+	// 	} catch (Exception e) {e.printStackTrace();}
+	// 	return false;
+	// }
 
 }
