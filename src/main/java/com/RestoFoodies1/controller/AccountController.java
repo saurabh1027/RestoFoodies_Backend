@@ -8,6 +8,8 @@ import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,8 +34,8 @@ public class AccountController {
 	
 	// In use - start
 	
-	@PostMapping("/ValidateToken")
-	public User getUserByToken(@RequestBody String token) {
+	@GetMapping("/User")
+	public User getUserByToken(@RequestParam("token") String token) {
 		try {
 			return udao.getUserByUsername(jwtUtil.extractUsername(token));
 		}catch(ExpiredJwtException e) {System.out.println("Jwt Expired:this print statement is located at accountController-78");}
@@ -54,15 +56,12 @@ public class AccountController {
 		return jwt;
 	}
 	
-	@PostMapping("/update-user")
+	@PatchMapping("/User")
 	public String updateUser(@RequestBody User user) {
-		try {
-			return udao.updateUser(user);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
+		return udao.updateUser(user);
 	}
 	
-	@PostMapping("/update-user-pic")
+	@PatchMapping("/User-Profile")
 	public String updateUserPic(@RequestParam("file") MultipartFile file) {
 		File f = new File(imageLocation+"user_pictures//"+file.getOriginalFilename());
 		try {
@@ -77,16 +76,9 @@ public class AccountController {
 		return "Failure";
 	}
 	
-	@PostMapping("/get-user")
-	public User getUserProfile(@RequestBody String username) {
-		User user;
-		try {
-			user = udao.getUserByUsername(username.trim());
-			if(user!=null) {
-				return user;
-			}
-		}catch(Exception e) {e.printStackTrace();}
-		return null;
+	@GetMapping("/User")
+	public User getUserProfile(@RequestParam("username") String username) {
+		return udao.getUserByUsername(username.trim());
 	}
 	
 	@PostMapping("/delete-user")
@@ -113,12 +105,4 @@ public class AccountController {
 
 	// In use - end
 	
-	// @PostMapping("/isLoggedIn")
-	// public boolean isLoggedIn(@RequestBody String token) {
-	// 	try {
-	// 		return udao.isLoggedIn(this.jwtUtil.extractUsername(token));
-	// 	} catch (Exception e) {e.printStackTrace();}
-	// 	return false;
-	// }
-
 }

@@ -2,7 +2,6 @@ package com.RestoFoodies1.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.RestoFoodies1.model.*;
@@ -33,7 +32,7 @@ public class RestaurantController {
 	public List<Food_Item> getItemsByFids(@RequestBody List<Integer> fids){
 		return rdao.getItemsByFids(fids);
 	}
-
+	
 	@GetMapping("/get-locations")
 	public List<String> getLocations(){
 		return rdao.getLocations();
@@ -44,6 +43,16 @@ public class RestaurantController {
 		return rdao.getAllItems(city);
 	}
 	
+	@PostMapping("/get-categories-by-cnames")
+	public List<Category> getCategoriesByCnames(@RequestBody List<String> cnames){
+		return rdao.getRestaurantCategories(cnames);
+	}
+
+	@PostMapping("/get-city-keyword-items/{keyword}")
+	public List<Food_Item> getItemsOfCityKeyword(@PathVariable String keyword,@RequestBody String city){
+		return rdao.getItemsOfKeyWord(keyword,city);
+	}
+
 	// In use - start
 	
 	@PostMapping("/Restaurant")
@@ -113,57 +122,27 @@ public class RestaurantController {
 	public Restaurant getRestaurantByUsername(@PathVariable String username) {
 		return rdao.getRestaurantByUsername(username);
 	}
-
-	//Above are done
 	
-	@PostMapping("/add-category")
+	@PostMapping("/Category")
 	public String addNewCategory(@RequestBody Category category) {
-		try {
-			return rdao.addNewCategory(category);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
+		return rdao.addNewCategory(category);
 	}
 	
-	@PostMapping("/delete-restaurant/{rid}")
+	@DeleteMapping("/Restaurant/{rid}")
 	public String deleteRestaurantByRid(@PathVariable int rid) {
-		try {
-			return rdao.deleteRestaurant(rid);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
+		return rdao.deleteRestaurant(rid);
 	}
 	
-	@PostMapping("/get-categories-by-cnames")
-	public List<Category> getCategoriesByCnames(@RequestBody List<String> cnames){
-		try {
-			return rdao.getRestaurantCategories(cnames);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
-	}
-	
-	@PostMapping("/update-restaurant")
+	@PatchMapping("/Restaurant")
 	public String updateRestaurant(@RequestBody Restaurant rest) {
-		try {
-			return rdao.updateRestaurant(rest);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
+		return rdao.updateRestaurant(rest);
 	}
 	
-	@PostMapping("/get-food-items/{rid}")
-	public List<Food_Item> getFoodItems(@PathVariable int rid,@RequestBody String cname){
-		List<Food_Item> list = new ArrayList<Food_Item>();
-		try {
-			list = (cname.trim().equals("All"))?rdao.getAllFoodItems(rid):rdao.getFoodItems(cname, rid);
-		}catch(Exception e) {e.printStackTrace();}
-		return list;
+	@GetMapping("/Restaurant/{rid}/Items")
+	public List<Food_Item> getFoodItems(@PathVariable int rid,@RequestParam("cname") String cname){
+		return (cname.trim().equals("All"))?rdao.getAllFoodItems(rid):rdao.getFoodItems(cname, rid);
 	}
 	
-	@PostMapping("/get-city-keyword-items/{keyword}")
-	public List<Food_Item> getItemsOfCityKeyword(@PathVariable String keyword,@RequestBody String city){
-		try {
-			return rdao.getItemsOfKeyWord(keyword,city);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
-	}
 
 	//In Use - End
 	
