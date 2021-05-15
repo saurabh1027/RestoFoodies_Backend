@@ -8,7 +8,9 @@ import java.util.List;
 import com.RestoFoodies1.model.*;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,17 +28,30 @@ public class RestaurantController {
 	// String imageLocation = "E:\\VS-Code\\Projects\\Angular\\RestoFoodies\\src\\assets\\images\\";  For Windows
 	String imageLocation = "/home/sauru8887/Documents/Github/RestoFoodies/src/assets/images/";
 	
-	// In use - start
-	
-	@PostMapping("/add-restaurant")
-	public String saveRestaurant(@RequestBody Restaurant restaurant) {
-		try {
-			return rdao.addRestaurant(restaurant);
-		}catch (Exception e) {e.printStackTrace();}
-		return "Server Error";
+	//not sure
+	@PostMapping("/get-items-by-fids")
+	public List<Food_Item> getItemsByFids(@RequestBody List<Integer> fids){
+		return rdao.getItemsByFids(fids);
+	}
+
+	@GetMapping("/get-locations")
+	public List<String> getLocations(){
+		return rdao.getLocations();
 	}
 	
-	@PostMapping("/add-restaurant-profile")
+	@PostMapping("/get-all-city-items")
+	public List<Food_Item> getAllCityItems(@RequestBody String city){
+		return rdao.getAllItems(city);
+	}
+	
+	// In use - start
+	
+	@PostMapping("/Restaurant")
+	public String saveRestaurant(@RequestBody Restaurant restaurant) {
+		return rdao.addRestaurant(restaurant);
+	}
+	
+	@PostMapping("/Restaurant-Profile")
 	public String addRestaurantProfile(@RequestParam("file") MultipartFile file) {
 		File f = new File(imageLocation+"restaurants/"+file.getOriginalFilename());
 		try {
@@ -49,94 +64,32 @@ public class RestaurantController {
 		return "Failure";
 	}	
 	
-	@PostMapping("/get-items-by-fids")
-	public List<Food_Item> getItemsByFids(@RequestBody List<Integer> fids){
-		try {
-			return rdao.getItemsByFids(fids);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
+	@GetMapping("/Restaurants/{rname}")
+	public Restaurant getRestaurantByName(@PathVariable("rname") String rname) {
+		return rdao.getRestaurantByName(rname);
 	}
 	
-	@PostMapping("/add-list-order/{rid}")
-	public String addOrderToList(@RequestBody int oid,@PathVariable int rid) {
-		try {
-			return rdao.addOrderToList(oid,rid);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
-	}
-	@PostMapping("/get-restaurant/{rname}")
-	public Restaurant getRestaurantByRname(@PathVariable String rname) {
-		try {
-			return rdao.getRestaurantByRname(rname);
-		}catch (Exception e) {e.printStackTrace();}
-		return null;
+	@GetMapping("/Restaurants/{rid}/Items")
+	public List<Food_Item> getRestaurantItems(@PathVariable int rid,@RequestParam("status") String status){
+		return rdao.getRestaurantItems(rid,status);
 	}
 	
-	@PostMapping("/get-restaurant")
-	public Restaurant getRestaurantByName(@RequestBody Restaurant r) {
-		try {
-			return rdao.getRestaurantByName(r);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
+	@GetMapping("/Restaurants")
+	public List<Restaurant> getRestaurantsByLocation(@RequestParam("location") String location){
+		return rdao.getRestaurantsByLocation(location);
 	}
 	
-	@PostMapping("/get-restaurant-list-orders/{rid}")
-	public List<Order1> getListOrdersOfRestaurantByBranch(@RequestBody String branch,@PathVariable int rid){
-		try {
-			return rdao.getListOrdersOfRestaurantByBranch(rid,branch);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
+	@DeleteMapping("/Item/{fid}")
+	public String deleteItem(@PathVariable("fid") int fid) {
+		return rdao.deleteItem(fid);
 	}
 	
-	@PostMapping("/get-restaurant-available-items/{rid}")
-	public List<Food_Item> getRestaurantAvailableItems(@PathVariable int rid){
-		try {
-			return rdao.getRestaurantAvailableItems(rid);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
-	}
-	
-	@GetMapping("/get-locations")
-	public List<String> getLocations(){
-		try {
-			return rdao.getLocations();
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
-	}
-	
-	@PostMapping("/get-location-restaurants")
-	public List<Restaurant> getRestaurantsByLocation(@RequestBody String location){
-		try {
-			return rdao.getRestaurantsByLocation(location);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
-	}
-	
-	@PostMapping("/get-all-city-items")
-	public List<Food_Item> getAllCityItems(@RequestBody String city){
-		try {
-			return rdao.getAllItems(city);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
-	}
-	
-	@PostMapping("/delete-item")
-	public String deleteItem(@RequestBody int fid) {
-		try {
-			return rdao.deleteItem(fid);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
-	}
-	
-	@PostMapping("/add-food-item")
+	@PostMapping("/Item")
 	public String addFoodItem(@RequestBody Food_Item food_item) {
-		try {
-			return rdao.addFoodItem(food_item);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
+		return rdao.addFoodItem(food_item);
 	}
 	
-	@PostMapping("/add-food-item-pic")
+	@PostMapping("/Item-Profile")
 	public String addFoodItemPic(@RequestParam("file") MultipartFile file) {
 		File f = new File(imageLocation+"food_items/"+file.getOriginalFilename());
 		try {
@@ -151,21 +104,17 @@ public class RestaurantController {
 		return "Failure";
 	}	
 	
-	@PostMapping("/update-item")
+	@PatchMapping("/Item")
 	public String updateItem(@RequestBody Food_Item item) {
-		try {
-			return rdao.updateItem(item);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
+		return rdao.updateItem(item);
 	}
-	
-	@PostMapping("/get-user-restaurant")
-	public Restaurant getRestaurantByUsername(@RequestBody String username) {
-		try {
-			return rdao.getRestaurantByUsername(username);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
+
+	@GetMapping("/Users/{username}/Restaurant")
+	public Restaurant getRestaurantByUsername(@PathVariable String username) {
+		return rdao.getRestaurantByUsername(username);
 	}
+
+	//Above are done
 	
 	@PostMapping("/add-category")
 	public String addNewCategory(@RequestBody Category category) {

@@ -36,13 +36,13 @@ public class BasketDao {
 		return "Database Error";
 	}
 
-	public List<Order1> getRestaurantPlacedOrdersByBranch(String branch,String rname){
+	public List<Order1> getRestaurantOrdersByBranch(String status,String branch,String rname){
 		List<Order1> list = new ArrayList<Order1>();
 		try {
 			PreparedStatement pstmt = con.prepareStatement("select * from order1 where rname=? and branch=? and status=?");
 			pstmt.setString(1, rname);
 			pstmt.setString(2, branch);
-			pstmt.setString(3,"Placed");
+			pstmt.setString(3, status);
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()) {
 				list.add(new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
@@ -56,19 +56,9 @@ public class BasketDao {
 	public String updateItems(List<Food_Item> list) {
 		try {
 			for(int i=0;i<list.size();i++) {
-				if(!this.updateItem(list.get(i)).equals("Success"))
-					return "Unable to update all items.";
+				this.updateItem(list.get(i));
 			}
 			return "Success";
-		} catch (Exception e) {e.printStackTrace();}
-		return "Database Error";
-	}
-
-	public String rejectOrder(int oid) {
-		try {
-			PreparedStatement pstmt = con.prepareStatement("update order1 set status='Rejected' where oid=?");
-			pstmt.setInt(1, oid);
-			return (pstmt.executeUpdate()==1)?"Success":"Failed to reject order.";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
@@ -191,6 +181,21 @@ public class BasketDao {
 			return (i==1)?"Success":"Unable to update.";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
+	}
+
+	public List<Order1> getOrdersByContact(String contact){
+		List<Order1> list = new ArrayList<Order1>();
+		try{
+			PreparedStatement pstmt = con.prepareStatement("select * from order1 where contact=?");
+			pstmt.setString(1, contact);
+			ResultSet rst = pstmt.executeQuery();
+			while(rst.next()){
+				list.add(new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
+				rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname")));
+			}
+			return list;
+		}catch(Exception e){e.printStackTrace();}
+		return null;
 	}
 	
 	// In use - end

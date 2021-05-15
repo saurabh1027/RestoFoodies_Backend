@@ -28,11 +28,7 @@ public class RestaurantDao {
 			pstmt.setString(5, rest.getLatlng());
 			pstmt.setString(6, rest.getProfile());
 			pstmt.setString(7, rest.getUsername());
-			if(pstmt.executeUpdate()==1) {
-				return "Restaurant added successfully";
-			}else {
-				return "Failed to add restaurant";
-			}
+			return (pstmt.executeUpdate()==1) ? "Success" : "Failed to add restaurant";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
@@ -53,39 +49,10 @@ public class RestaurantDao {
 		return null;
 	}
 	
-	public String addOrderToList(int oid,int rid) {
+	public Restaurant getRestaurantByName(String rname) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("select * from list where rid=?");
-			pstmt.setInt(1, rid);
-			ResultSet rst = pstmt.executeQuery();
-			if (rst.next()) {
-				pstmt = con.prepareStatement("update list set oids = ? where rid=?");
-				pstmt.setString(1, rst.getString("oids") + oid + ",");
-				pstmt.setInt(2, rid);
-				if (pstmt.executeUpdate() != 1)
-					return "Unable to update record.";
-			} else {
-				PreparedStatement pstmt1 = con.prepareStatement("insert into list(oids,rid) values(?,?)");
-				pstmt1.setString(1, oid + ",");
-				pstmt1.setInt(2, rid);
-				if (pstmt1.executeUpdate() != 1)
-				return "Unable to create record.";
-			}
-			pstmt = con.prepareStatement("update order1 set status = 'Accepted' where oid=?");
-			pstmt.setInt(1,oid);
-			return (pstmt.executeUpdate()==1)?"Success":"Unable to add to list";
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "Database Error";
-	}
-	
-	public Restaurant getRestaurantByName(Restaurant r) {
-		try {
-			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where name = ? and branch = ? and username = ?");
-			pstmt.setString(1, r.getName());
-			pstmt.setString(2, r.getBranch());
-			pstmt.setString(3, r.getUsername());
+			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where name = ?");
+			pstmt.setString(1, rname);
 			ResultSet rst = pstmt.executeQuery();
 			if(rst.next()) {
 				return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
@@ -106,40 +73,6 @@ public class RestaurantDao {
 		return null;
 	}
 	
-	public List<Order1> getListOrdersOfRestaurantByBranch(int rid,String branch){
-		String oids = "";
-		List<Order1> list = new ArrayList<Order1>();
-		try {
-			PreparedStatement pstmt = con.prepareStatement("select * from list where rid=?");
-			pstmt.setInt(1,rid);
-			ResultSet rst = pstmt.executeQuery();
-			if(rst.next()){
-				oids = rst.getString("oids");
-				List<Integer> oid = new ArrayList<Integer>();
-				String str="";
-				for(int i=0;i<oids.length();i++){
-					if(oids.charAt(i)==','){
-						oid.add(Integer.parseInt(str));
-						str="";
-					}else{
-						str += oids.charAt(i);
-					}
-				}
-				for(int i=0;i<oid.size();i++){
-					PreparedStatement pstmt1 = con.prepareStatement("select * from order1 where oid = ? and branch = ? and status='Accepted'");
-					pstmt1.setInt(1,oid.get(i));
-					pstmt1.setString(2,branch);
-					ResultSet rs = pstmt1.executeQuery();
-					if(rs.next()){
-						list.add(new Order1(rs.getInt("oid"),rs.getString("recipient_name"),rs.getString("destination"),rs.getString("contact"),rs.getString("status"),rs.getString("items"),rs.getFloat("price"),rs.getString("branch"),rs.getString("rname") ));
-					}
-				}
-				return list;
-			}
-		}catch (Exception e){e.printStackTrace();}
-		return null;
-	}
-
 	public List<String> getLocations(){
 		List<String> list = new ArrayList<String>();
 		try {
@@ -220,8 +153,7 @@ public class RestaurantDao {
 		try {
 			PreparedStatement pstmt = con.prepareStatement("delete from food_item where fid = ?");
 			pstmt.setInt(1, fid);
-			int i = pstmt.executeUpdate();
-			return (i==1)?"Success":"Failed to delete item.";
+			return (pstmt.executeUpdate()==1)?"Success":"Failed to delete item.";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
@@ -271,8 +203,7 @@ public class RestaurantDao {
 			pstmt.setString(9, item.getStatus());
 			pstmt.setString(10, item.getCname());
 			pstmt.setInt(11, item.getFid());
-			int i=pstmt.executeUpdate();
-			return (i==1)?"Success":"Unable to update.";
+			return (pstmt.executeUpdate()==1)?"Success":"Unable to update.";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
@@ -393,11 +324,12 @@ public class RestaurantDao {
 		return null;
 	}
 
-	public List<Food_Item> getRestaurantAvailableItems(int rid){
+	public List<Food_Item> getRestaurantItems(int rid,String status){
 		List<Food_Item> list = new ArrayList<Food_Item>();
 		try {
-			PreparedStatement pstmt = con.prepareStatement("select * from food_item where rid=? and status='Available'");
+			PreparedStatement pstmt = con.prepareStatement("select * from food_item where rid=? and status='?'");
 			pstmt.setInt(1, rid);
+			pstmt.setString(2, status);
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()) {
 				list.add(new Food_Item(rst.getInt("fid"), rst.getString("fname"), rst.getDouble("price"), rst.getString("pic"), rst.getInt("quantity"), rst.getString("ingredients"), rst.getString("description"), rst.getBoolean("vegeterian"), rst.getString("ratings"), rst.getLong("ratio"), rst.getString("keywords"), rst.getString("status"), rst.getString("cname"), rst.getInt("rid")));

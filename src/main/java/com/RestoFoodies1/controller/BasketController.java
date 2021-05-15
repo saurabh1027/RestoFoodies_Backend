@@ -3,9 +3,12 @@ package com.RestoFoodies1.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.RestoFoodies1.dao.BasketDao;
@@ -21,60 +24,40 @@ public class BasketController {
 	
 	// In use - start
 	
-	@PostMapping("/place-order")
+	@PostMapping("/Order")
 	public String placeOrder(@RequestBody Order1 order) {
-		try {
-			return bdao.placeOrder(order);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
+		return bdao.placeOrder(order);
 	}
 	
-	@PostMapping("/get-restaurant-placed-orders/{rname}")
-	public List<Order1> getRestaurantPlacedOrdersByBranch(@PathVariable String rname,@RequestBody String branch){
-		try {
-			return bdao.getRestaurantPlacedOrdersByBranch(branch,rname);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
+	@GetMapping("/Restaurants/{rname}/Orders")
+	public List<Order1> getRestaurantPlacedOrdersByBranch(@PathVariable("rname") String rname,
+		@RequestParam("status") String status,@RequestParam("branch") String branch){
+		return bdao.getRestaurantOrdersByBranch(status,branch,rname);
 	}
 	
-	@PostMapping("/update-items")
+	@PatchMapping("/Items")
 	public String updateItems(@RequestBody List<Food_Item> items){
-		try {
-			return bdao.updateItems(items);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
+		return bdao.updateItems(items);
 	}
 	
-	@PostMapping("/reject-order")
-	public String rejectOrder(@RequestBody int oid) {
-		try {
-			return bdao.rejectOrder(oid);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
+	@GetMapping("/Customers/{username}/Orders")
+	public List<Order> getOrdersByUsername(@PathVariable("username") String username) {
+		return bdao.getOrdersByUsername(username);
 	}
 	
-	@PostMapping("/get-orders")
-	public List<Order> getOrdersByUsername(@RequestBody String username) {
-		try {
-			return bdao.getOrdersByUsername(username);
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
+	@PatchMapping("/Order")
+	public String updateOrder(@RequestBody Order1 order){
+		return bdao.updateOrder(order);
 	}
 	
+	@GetMapping("/Orders")
+	public List<Order1> getOrdersByContact(@RequestParam("contact") String contact){
+		return bdao.getOrdersByContact(contact);
+	}
+
 	@PostMapping("/add-order-item/{oid}")
 	public String addItemToOrder(@PathVariable int oid,@RequestBody Food_Item item) {
-		try {
-			return bdao.addItemToOrder(oid,item);
-		} catch (Exception e) {e.printStackTrace();}
-		return "Failure";
-	}
-	
-	@PostMapping("/update-order")
-	public String updateOrder(@RequestBody Order1 order){
-		try{
-			return bdao.updateOrder(order);
-		}catch(Exception e){e.printStackTrace();}
-		return "Failure";
+		return bdao.addItemToOrder(oid,item);
 	}
 
 	// In use - end
