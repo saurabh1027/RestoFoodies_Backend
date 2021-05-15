@@ -63,14 +63,15 @@ public class BasketDao {
 		return "Database Error";
 	}
 
-	public List<Order> getOrdersByUsername(String username) {
-		List<Order> list = new ArrayList<Order>();
+	public List<Order1> getOrdersByUsername(String username) {
+		List<Order1> list = new ArrayList<Order1>();
 		try {
 			PreparedStatement pstmt = con.prepareStatement("select * from orders where username = ?");
 			pstmt.setString(1, username);
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()) {
-				Order order = new Order(rst.getInt("oid"), rst.getString("name"), rst.getString("status"), rst.getString("location"), rst.getFloat("total_price"), rst.getString("contact"), rst.getString("username"));
+				Order1 order = new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
+						rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname"));
 				list.add(order);
 			}
 		} catch (Exception e) {e.printStackTrace();}
@@ -194,6 +195,28 @@ public class BasketDao {
 				rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname")));
 			}
 			return list;
+		}catch(Exception e){e.printStackTrace();}
+		return null;
+	}
+
+	public List<Order1> getOrdersByLocation(String location){
+		List<Order1> orders = new ArrayList<Order1>();
+		try{
+			PreparedStatement pmst = con.prepareStatement("select * from order1 where branch =? and status = 'Finished' ");
+			pmst.setString(1,location);
+			ResultSet rst = pmst.executeQuery();
+			while(rst.next()){
+				orders.add(new Order1(rst.getInt("oid"),
+						rst.getString("recipient_name"),
+						rst.getString("destination"),
+						rst.getString("contact"),
+						rst.getString("status"),
+						rst.getString("items"),
+						rst.getFloat("price"),
+						rst.getString("branch"),
+						rst.getString("rname")));
+			}
+			return orders;
 		}catch(Exception e){e.printStackTrace();}
 		return null;
 	}

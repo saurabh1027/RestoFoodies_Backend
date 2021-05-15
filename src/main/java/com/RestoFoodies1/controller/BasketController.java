@@ -41,7 +41,7 @@ public class BasketController {
 	}
 	
 	@GetMapping("/Customers/{username}/Orders")
-	public List<Order> getOrdersByUsername(@PathVariable("username") String username) {
+	public List<Order1> getOrdersByUsername(@PathVariable("username") String username) {
 		return bdao.getOrdersByUsername(username);
 	}
 	
@@ -58,6 +58,11 @@ public class BasketController {
 	@PostMapping("/add-order-item/{oid}")
 	public String addItemToOrder(@PathVariable int oid,@RequestBody Food_Item item) {
 		return bdao.addItemToOrder(oid,item);
+	}
+
+	@GetMapping("/Delivery")
+	public List<Order1> getOrdersByLocation(@RequestParam("location") String location){
+		return bdao.getOrdersByLocation(location);
 	}
 
 	// In use - end
