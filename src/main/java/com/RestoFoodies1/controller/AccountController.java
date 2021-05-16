@@ -7,13 +7,7 @@ import java.util.ArrayList;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.RestoFoodies1.dao.UserDao;
@@ -76,8 +70,8 @@ public class AccountController {
 		return "Failure";
 	}
 	
-	@GetMapping("/User")
-	public User getUserProfile(@RequestParam("username") String username) {
+	@GetMapping("/Users/{username}")
+	public User getUserProfile(@PathVariable("username") String username) {
 		return udao.getUserByUsername(username.trim());
 	}
 	

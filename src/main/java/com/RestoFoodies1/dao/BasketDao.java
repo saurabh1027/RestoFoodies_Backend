@@ -46,7 +46,7 @@ public class BasketDao {
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()) {
 				list.add(new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
-						rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname")));
+						rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname"), rst.getString("dname")));
 			}
 			return list;
 		} catch (Exception e) {e.printStackTrace();}
@@ -71,7 +71,7 @@ public class BasketDao {
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()) {
 				Order1 order = new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
-						rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname"));
+						rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname"), rst.getString("dname"));
 				list.add(order);
 			}
 		} catch (Exception e) {e.printStackTrace();}
@@ -149,7 +149,7 @@ public class BasketDao {
 	public String updateOrder(Order1 order){
 		try{
 			PreparedStatement pstmt = con.prepareStatement("update order1 set recipient_name=?,destination=?," +
-					"contact=?,status=?,items=?,price=?,branch=?,rname=? where oid=?");
+					"contact=?,status=?,items=?,price=?,branch=?,rname=?,dname=? where oid=?");
 			pstmt.setString(1,order.getRecipient_name());
 			pstmt.setString(2,order.getDestination());
 			pstmt.setString(3,order.getContact());
@@ -158,7 +158,8 @@ public class BasketDao {
 			pstmt.setFloat(6,order.getPrice());
 			pstmt.setString(7,order.getBranch());
 			pstmt.setString(8,order.getRname());
-			pstmt.setInt(9,order.getOid());
+			pstmt.setString(9, order.getDname());
+			pstmt.setInt(10,order.getOid());
 			return (pstmt.executeUpdate()==1) ? "Success" : "Unable to update order.";
 		}catch(Exception e){e.printStackTrace();}
 		return "Database Error";
@@ -192,7 +193,7 @@ public class BasketDao {
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()){
 				list.add(new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
-				rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname")));
+				rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname"), rst.getString("dname")));
 			}
 			return list;
 		}catch(Exception e){e.printStackTrace();}
@@ -214,7 +215,8 @@ public class BasketDao {
 						rst.getString("items"),
 						rst.getFloat("price"),
 						rst.getString("branch"),
-						rst.getString("rname")));
+						rst.getString("rname"),
+						rst.getString("dname")));
 			}
 			return orders;
 		}catch(Exception e){e.printStackTrace();}

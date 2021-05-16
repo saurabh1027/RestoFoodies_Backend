@@ -327,7 +327,7 @@ public class RestaurantDao {
 	public List<Food_Item> getRestaurantItems(int rid,String status){
 		List<Food_Item> list = new ArrayList<Food_Item>();
 		try {
-			PreparedStatement pstmt = con.prepareStatement("select * from food_item where rid=? and status='?'");
+			PreparedStatement pstmt = con.prepareStatement("select * from food_item where rid=? and status=?");
 			pstmt.setInt(1, rid);
 			pstmt.setString(2, status);
 			ResultSet rst = pstmt.executeQuery();

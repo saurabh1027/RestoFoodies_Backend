@@ -10,8 +10,9 @@ public class Order1 {
     Float price;
     String branch;
     String rname;
+	String dname;
 	public Order1(int oid, String recipient_name, String destination, String contact, String status, String items,
-			Float price, String branch, String rname) {
+			Float price, String branch, String rname, String dname) {
 		super();
 		this.oid = oid;
 		this.recipient_name = recipient_name;
@@ -22,9 +23,10 @@ public class Order1 {
 		this.price = price;
 		this.branch = branch;
 		this.rname = rname;
+		this.dname = dname;
 	}
 	public Order1(String recipient_name, String destination, String contact, String status, String items, Float price,
-			String branch, String rname) {
+			String branch, String rname, String dname) {
 		super();
 		this.recipient_name = recipient_name;
 		this.destination = destination;
@@ -34,6 +36,7 @@ public class Order1 {
 		this.price = price;
 		this.branch = branch;
 		this.rname = rname;
+		this.dname = dname;
 	}
 	public Order1() {
 		super();
@@ -91,6 +94,12 @@ public class Order1 {
 	}
 	public void setRname(String rname) {
 		this.rname = rname;
+	}
+	public String getDname() {
+		return dname;
+	}
+	public void setDname(String dname) {
+		this.dname = dname;
 	}
 	@Override
 	public String toString() {
