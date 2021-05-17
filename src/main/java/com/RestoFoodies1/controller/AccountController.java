@@ -24,7 +24,8 @@ public class AccountController {
 	UserDao udao = new UserDao(DBConnection.createConnection());
 	@Autowired
 	private JwtUtil jwtUtil;
-	String imageLocation= "E:\\VS-Code\\Projects\\Angular\\RestoFoodies\\src\\assets\\images\\";
+//	String imageLocation= "E:\\VS-Code\\Projects\\Angular\\RestoFoodies\\src\\assets\\images\\";
+	String imageLocation = "/home/appu/work/dyrestofoodies/RestoFoodies/src/assets/images/";
 	
 	// In use - start
 	

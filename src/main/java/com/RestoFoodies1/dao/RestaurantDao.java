@@ -110,17 +110,10 @@ public class RestaurantDao {
 		List<String> list = new ArrayList<String>();
 		try {
 			Statement stmt = con.createStatement();
-			ResultSet rst = stmt.executeQuery("select branch from restaurant");
+			ResultSet rst = stmt.executeQuery("select bname from branch");
 			while(rst.next()) {
-				String str="";
-				for(int i=0;i<rst.getString("branch").length();i++) {
-					if(rst.getString("branch").charAt(i)==',') {
-						if(!list.contains(str))
-							list.add(str);
-						str="";
-					}else {
-						str = str + rst.getString("branch").charAt(i);
-					}
+				if(!list.contains(rst.getString("bname"))){
+					list.add((rst.getString("bname")));
 				}
 			}
 			return list;
