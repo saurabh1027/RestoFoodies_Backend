@@ -47,17 +47,22 @@ public class RestaurantController {
 	public List<Category> getCategoriesByCnames(@RequestBody List<String> cnames){
 		return rdao.getRestaurantCategories(cnames);
 	}
-
+	
 	@PostMapping("/get-city-keyword-items/{keyword}")
 	public List<Food_Item> getItemsOfCityKeyword(@PathVariable String keyword,@RequestBody String city){
 		return rdao.getItemsOfKeyWord(keyword,city);
 	}
-
+	
 	// In use - start
 	
 	@PostMapping("/Restaurant")
-	public String saveRestaurant(@RequestBody Restaurant restaurant) {
+	public int addRestaurant(@RequestBody Restaurant restaurant) {
 		return rdao.addRestaurant(restaurant);
+	}
+	
+	@PostMapping("/Restaurants/{rid}/Branch")
+	public String addBranch(@RequestBody Branch branch){
+		return rdao.addBranch(branch);
 	}
 	
 	@PostMapping("/Restaurant-Profile")
@@ -118,9 +123,9 @@ public class RestaurantController {
 		return rdao.updateItem(item);
 	}
 
-	@GetMapping("/Users/{username}/Restaurant")
-	public Restaurant getRestaurantByUsername(@PathVariable String username) {
-		return rdao.getRestaurantByUsername(username);
+	@GetMapping("/Users/{uid}/Restaurant")
+	public Restaurant getRestaurantByUid(@PathVariable("uid") int uid) {
+		return rdao.getRestaurantByUid(uid);
 	}
 	
 	@PostMapping("/Category")
@@ -142,6 +147,17 @@ public class RestaurantController {
 	public List<Food_Item> getFoodItems(@PathVariable int rid,@RequestParam("cname") String cname){
 		return (cname.trim().equals("All"))?rdao.getAllFoodItems(rid):rdao.getFoodItems(cname, rid);
 	}
+
+	@GetMapping("/Restaurants/{rid}/Branches")
+	public List<Branch> getBranches(@PathVariable("rid") int rid){
+		return rdao.getBranches(rid);
+	}
+
+	@GetMapping("/Restaurants/{rid}/Branches/{bname}")
+	public Branch getBranchOfRestaurantByLocation(@PathVariable("rid") int rid,@PathVariable("bname") String bname){
+		return rdao.getBranchOfRestaurantByLocation(bname,rid);
+	}
+
 	
 
 	//In Use - End

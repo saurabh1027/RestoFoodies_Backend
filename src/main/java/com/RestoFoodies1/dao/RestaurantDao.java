@@ -18,18 +18,39 @@ public class RestaurantDao {
 	
 	// In use - start
 	
-	public String addRestaurant(Restaurant rest) {
+	public int addRestaurant(Restaurant rest) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("insert into restaurant(name,contact,email,branch,latlng,profile,username) values(?,?,?,?,?,?,?)");
-			pstmt.setString(1, rest.getName());
-			pstmt.setString(2, rest.getContact());
-			pstmt.setString(3, rest.getEmail());
-			pstmt.setString(4, rest.getBranch());
-			pstmt.setString(5, rest.getLatlng());
-			pstmt.setString(6, rest.getProfile());
-			pstmt.setString(7, rest.getUsername());
-			return (pstmt.executeUpdate()==1) ? "Success" : "Failed to add restaurant";
+			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where uid=?");
+			pstmt.setInt(1, rest.getUid());
+			ResultSet rst = pstmt.executeQuery();
+			if(!rst.next()){
+				pstmt = con.prepareStatement("insert into restaurant(name,contact,email,profile,uid) values(?,?,?,?,?)");
+				pstmt.setString(1, rest.getName());
+				pstmt.setString(2, rest.getContact());
+				pstmt.setString(3, rest.getEmail());
+				pstmt.setString(4, rest.getProfile());
+				pstmt.setInt(5, rest.getUid());
+				if(pstmt.executeUpdate()==1){
+					pstmt = con.prepareStatement("select rid from restaurant where uid=?");
+					pstmt.setInt(1, rest.getUid());
+					rst = pstmt.executeQuery();
+					if(rst.next()){
+						return rst.getInt("rid");
+					}
+				}
+			}
 		} catch (Exception e) {e.printStackTrace();}
+		return 0;
+	}
+
+	public String addBranch(Branch branch){
+		try{
+			PreparedStatement pstmt = con.prepareStatement("insert into branch(bname,location,rid) values(?,?,?)");
+			pstmt.setString(1, branch.getBname());
+			pstmt.setString(2, branch.getLocation());
+			pstmt.setInt(3, branch.getRid());
+			return (pstmt.executeUpdate()==1) ? "Success" : "Unable to add branch!";
+		}catch(Exception e){e.printStackTrace();}
 		return "Database Error";
 	}
 	
@@ -55,7 +76,13 @@ public class RestaurantDao {
 			pstmt.setString(1, rname);
 			ResultSet rst = pstmt.executeQuery();
 			if(rst.next()) {
-				return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
+				return new Restaurant(rst.getInt("rid"),
+					rst.getString("name"),
+					rst.getString("contact"),
+					rst.getString("email"),
+					rst.getString("categories"),
+					rst.getString("profile"),
+					rst.getInt("uid"));
 			}
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
@@ -67,7 +94,13 @@ public class RestaurantDao {
 			pstmt.setString(1, rname);
 			ResultSet rst = pstmt.executeQuery();
 			if(rst.next()) {
-				return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
+				return new Restaurant(rst.getInt("rid"),
+					rst.getString("name"),
+					rst.getString("contact"),
+					rst.getString("email"),
+					rst.getString("categories"),
+					rst.getString("profile"),
+					rst.getInt("uid"));
 			}
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
@@ -97,24 +130,28 @@ public class RestaurantDao {
 
 	public List<Restaurant> getRestaurantsByLocation(String location){
 		List<Restaurant> list = new ArrayList<Restaurant>();
+		List<Integer> rids = new ArrayList<Integer>();
 		try {
-			Statement stmt = con.createStatement();
-			ResultSet rst = stmt.executeQuery("select * from restaurant");
-			while(rst.next()) {
-				String str = "";
-				List<String> branches=new ArrayList<String>();
-				for(int i=0;i<rst.getString("branch").length();i++) {
-					if(rst.getString("branch").charAt(i)==',') {
-						if(!branches.contains(str))
-							branches.add(str);
-						str="";
-					}else {
-						str = str + rst.getString("branch").charAt(i);
-					}
-				}
-				if(branches.contains(location)) {
-					Restaurant rest = new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
-					list.add(rest);
+			PreparedStatement pstmt = con.prepareStatement("select rid from branch where bname=?");
+			pstmt.setString(1, location);
+			ResultSet rst = pstmt.executeQuery();
+			while(rst.next()){
+				rids.add(rst.getInt("rid"));
+			}
+			for(int i=0;i<rids.size();i++){
+				pstmt = con.prepareStatement("select * from restaurant where rid=?");
+				pstmt.setInt(1, rids.get(i));
+				rst = pstmt.executeQuery();
+				if(rst.next()){
+					list.add(
+						new Restaurant(rst.getInt("rid"),
+							rst.getString("name"),
+							rst.getString("contact"),
+							rst.getString("email"),
+							rst.getString("categories"),
+							rst.getString("profile"),
+							rst.getInt("uid"))
+					);
 				}
 			}
 			return list;
@@ -208,12 +245,19 @@ public class RestaurantDao {
 		return "Database Error";
 	}
 	
-	public Restaurant getRestaurantByUsername(String username) {
+	public Restaurant getRestaurantByUid(int uid) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where username =?");
-			pstmt.setString(1, username);
+			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where uid =?");
+			pstmt.setInt(1, uid);
 			ResultSet rst = pstmt.executeQuery();
-			if(rst.next())return new Restaurant(rst.getInt("rid"), rst.getString("name"), rst.getString("contact"), rst.getString("email"), rst.getString("branch"), rst.getString("categories"), rst.getString("latlng"), rst.getString("profile"), rst.getString("username"));
+			if(rst.next())
+				return new Restaurant(rst.getInt("rid"),
+					rst.getString("name"),
+					rst.getString("contact"),
+					rst.getString("email"),
+					rst.getString("categories"),
+					rst.getString("profile"),
+					rst.getInt("uid"));
 		} catch (Exception e) {e.printStackTrace();}
 		return null;
 	}
@@ -262,14 +306,12 @@ public class RestaurantDao {
 
 	public String updateRestaurant(Restaurant rest) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("update restaurant set name=?,contact=?,email=?,branch=?,latlng=?,categories=? where rid=?");
+			PreparedStatement pstmt = con.prepareStatement("update restaurant set name=?,contact=?,email=?,categories=? where rid=?");
 			pstmt.setString(1, rest.getName());
 			pstmt.setString(2, rest.getContact());
 			pstmt.setString(3, rest.getEmail());
-			pstmt.setString(4, rest.getBranch());
-			pstmt.setString(5, rest.getLatlng());
-			pstmt.setString(6, rest.getCategories());
-			pstmt.setInt(7, rest.getRid());
+			pstmt.setString(4, rest.getCategories());
+			pstmt.setInt(5, rest.getRid());
 			int i = pstmt.executeUpdate();
 			return (i==1)?"Success":"Failed to update restaurant";
 		} catch (Exception e) {e.printStackTrace();}
@@ -336,6 +378,38 @@ public class RestaurantDao {
 			}
 			return list;
 		} catch (Exception e) {e.printStackTrace();}
+		return null;
+	}
+
+	public List<Branch> getBranches(int rid){
+		List<Branch> list = new ArrayList<Branch>();
+		try{
+			PreparedStatement pstmt = con.prepareStatement("select * from branch where rid = ?");
+			pstmt.setInt(1, rid);
+			ResultSet rst = pstmt.executeQuery();
+			while(rst.next()){
+				list.add(new Branch( rst.getInt("bid"), rst.getString("bname"), rst.getString("location"), rid));
+			}
+			return list;
+		}catch(Exception e){e.printStackTrace();}
+		return null;
+	}
+
+	public Branch getBranchOfRestaurantByLocation(String bname,int rid){
+		try{
+			PreparedStatement pstmt = con.prepareStatement("select * from branch where bname=? and rid=?");
+			pstmt.setString(1, bname);
+			pstmt.setInt(2, rid);
+			ResultSet rst = pstmt.executeQuery();
+			if(rst.next()){
+				return new Branch(
+					rst.getInt("bid"),
+					rst.getString("bname"),
+					rst.getString("location"),
+					rst.getInt("rid")
+					);
+			}
+		}catch(Exception e){e.printStackTrace();}
 		return null;
 	}
 

@@ -3,38 +3,27 @@ package com.RestoFoodies1.model;
 public class Order1 {
 	int oid;
     String recipient_name;
+	String source;
     String destination;
     String contact;
     String status;
     String items;
     Float price;
-    String branch;
+    int bid;
     String rname;
 	String dname;
-	public Order1(int oid, String recipient_name, String destination, String contact, String status, String items,
-			Float price, String branch, String rname, String dname) {
+	public Order1(int oid, String recipient_name, String source, String destination, String contact, String status, String items,
+			Float price, int bid, String rname, String dname) {
 		super();
 		this.oid = oid;
 		this.recipient_name = recipient_name;
 		this.destination = destination;
+		this.source = source;
 		this.contact = contact;
 		this.status = status;
 		this.items = items;
 		this.price = price;
-		this.branch = branch;
-		this.rname = rname;
-		this.dname = dname;
-	}
-	public Order1(String recipient_name, String destination, String contact, String status, String items, Float price,
-			String branch, String rname, String dname) {
-		super();
-		this.recipient_name = recipient_name;
-		this.destination = destination;
-		this.contact = contact;
-		this.status = status;
-		this.items = items;
-		this.price = price;
-		this.branch = branch;
+		this.bid = bid;
 		this.rname = rname;
 		this.dname = dname;
 	}
@@ -52,6 +41,12 @@ public class Order1 {
 	}
 	public void setRecipient_name(String recipient_name) {
 		this.recipient_name = recipient_name;
+	}
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
 	}
 	public String getDestination() {
 		return destination;
@@ -83,11 +78,11 @@ public class Order1 {
 	public void setPrice(Float price) {
 		this.price = price;
 	}
-	public String getBranch() {
-		return branch;
+	public int getBid() {
+		return bid;
 	}
-	public void setBranch(String branch) {
-		this.branch = branch;
+	public void setBid(int bid) {
+		this.bid = bid;
 	}
 	public String getRname() {
 		return rname;
@@ -100,11 +95,5 @@ public class Order1 {
 	}
 	public void setDname(String dname) {
 		this.dname = dname;
-	}
-	@Override
-	public String toString() {
-		return "Order1 [oid=" + oid + ", recipient_name=" + recipient_name + ", destination=" + destination
-				+ ", contact=" + contact + ", status=" + status + ", items=" + items + ", price=" + price + ", branch="
-				+ branch + ", rname=" + rname + "]";
 	}
 }
