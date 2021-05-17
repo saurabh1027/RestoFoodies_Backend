@@ -22,31 +22,32 @@ public class BasketDao {
 
 	public String placeOrder(Order1 order) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("insert into order1(recipient_name,destination,contact,status,items,price,branch,rname) values(?,?,?,?,?,?,?,?)");
+			PreparedStatement pstmt = con.prepareStatement("insert into order1(recipient_name,destination,contact,status,items,price,bid,rname,source) values(?,?,?,?,?,?,?,?,?)");
 			pstmt.setString(1, order.getRecipient_name());
 			pstmt.setString(2, order.getDestination());
 			pstmt.setString(3, order.getContact());
 			pstmt.setString(4, order.getStatus());
 			pstmt.setString(5, order.getItems());
 			pstmt.setFloat(6, order.getPrice());
-			pstmt.setString(7, order.getBranch());
+			pstmt.setInt(7, order.getBid());
 			pstmt.setString(8, order.getRname());
+			pstmt.setString(9, order.getSource());
 			return (pstmt.executeUpdate()==1)?"Success":"Failed to place order.";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";
 	}
 
-	public List<Order1> getRestaurantOrdersByBranch(String status,String branch,String rname){
+	public List<Order1> getRestaurantOrdersByBid(String status,int bid,String rname){
 		List<Order1> list = new ArrayList<Order1>();
 		try {
-			PreparedStatement pstmt = con.prepareStatement("select * from order1 where rname=? and branch=? and status=?");
-			pstmt.setString(1, rname);
-			pstmt.setString(2, branch);
+			PreparedStatement pstmt = con.prepareStatement("select * from order1 where bid=? and rname=? and status=?");
+			pstmt.setInt(1, bid);
+			pstmt.setString(2, rname);
 			pstmt.setString(3, status);
 			ResultSet rst = pstmt.executeQuery();
-			while(rst.next()) {
-				list.add(new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
-						rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname"), rst.getString("dname")));
+			while(rst.next()){
+				list.add(new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("source"), rst.getString("destination"), rst.getString("contact"),
+				rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getInt("bid"), rst.getString("rname"), rst.getString("dname")));
 			}
 			return list;
 		} catch (Exception e) {e.printStackTrace();}
@@ -70,8 +71,8 @@ public class BasketDao {
 			pstmt.setString(1, username);
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()) {
-				Order1 order = new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
-						rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname"), rst.getString("dname"));
+				Order1 order = new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("source"), rst.getString("destination"), rst.getString("contact"),
+						rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getInt("bid"), rst.getString("rname"), rst.getString("dname"));
 				list.add(order);
 			}
 		} catch (Exception e) {e.printStackTrace();}
@@ -149,17 +150,18 @@ public class BasketDao {
 	public String updateOrder(Order1 order){
 		try{
 			PreparedStatement pstmt = con.prepareStatement("update order1 set recipient_name=?,destination=?," +
-					"contact=?,status=?,items=?,price=?,branch=?,rname=?,dname=? where oid=?");
+					"contact=?,status=?,items=?,price=?,bid=?,rname=?,dname=?,source=? where oid=?");
 			pstmt.setString(1,order.getRecipient_name());
 			pstmt.setString(2,order.getDestination());
 			pstmt.setString(3,order.getContact());
 			pstmt.setString(4,order.getStatus());
 			pstmt.setString(5,order.getItems());
 			pstmt.setFloat(6,order.getPrice());
-			pstmt.setString(7,order.getBranch());
+			pstmt.setInt(7,order.getBid());
 			pstmt.setString(8,order.getRname());
 			pstmt.setString(9, order.getDname());
-			pstmt.setInt(10,order.getOid());
+			pstmt.setString(10, order.getSource());
+			pstmt.setInt(11,order.getOid());
 			return (pstmt.executeUpdate()==1) ? "Success" : "Unable to update order.";
 		}catch(Exception e){e.printStackTrace();}
 		return "Database Error";
@@ -192,33 +194,67 @@ public class BasketDao {
 			pstmt.setString(1, contact);
 			ResultSet rst = pstmt.executeQuery();
 			while(rst.next()){
-				list.add(new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("destination"), rst.getString("contact"),
-				rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getString("branch"), rst.getString("rname"), rst.getString("dname")));
+				list.add(new Order1(rst.getInt("oid"), rst.getString("recipient_name"), rst.getString("source"), rst.getString("destination"), rst.getString("contact"),
+				rst.getString("status"), rst.getString("items"), rst.getFloat("price"), rst.getInt("bid"), rst.getString("rname"), rst.getString("dname")));
 			}
 			return list;
 		}catch(Exception e){e.printStackTrace();}
 		return null;
 	}
 
-	public List<Order1> getOrdersByLocation(String location){
+	public List<Order1> getOrdersByLocation(String bname){
 		List<Order1> orders = new ArrayList<Order1>();
+		List<Integer> bids = new ArrayList<Integer>();
 		try{
-			PreparedStatement pmst = con.prepareStatement("select * from order1 where branch =? and status = 'Finished' ");
-			pmst.setString(1,location);
+			PreparedStatement pmst = con.prepareStatement("select bid from branch where bname =?");
+			pmst.setString(1,bname);
 			ResultSet rst = pmst.executeQuery();
 			while(rst.next()){
-				orders.add(new Order1(rst.getInt("oid"),
+				bids.add(rst.getInt("bid"));
+			}
+			for(int i=0;i<bids.size();i++){
+				pmst = con.prepareStatement("select * from order1 where bid=? and status='Finished'");
+				pmst.setInt(1, bids.get(i));
+				rst = pmst.executeQuery();
+				while(rst.next()){
+					orders.add(new Order1(rst.getInt("oid"),
 						rst.getString("recipient_name"),
+						rst.getString("source"),
 						rst.getString("destination"),
 						rst.getString("contact"),
 						rst.getString("status"),
 						rst.getString("items"),
 						rst.getFloat("price"),
-						rst.getString("branch"),
+						rst.getInt("bid"),
+						rst.getString("rname"),
+						rst.getString("dname")));
+				}
+			}
+			return orders;
+		}catch(Exception e){e.printStackTrace();}
+		return null;
+	}
+
+	public List<Order1> getDeliveringOrdersByDname(String dname){
+		List<Order1> list = new ArrayList<Order1>();
+		try{
+			PreparedStatement pstmt = con.prepareStatement("select * from order1 where status='Delivering' and dname=?");
+			pstmt.setString(1, dname);
+			ResultSet rst = pstmt.executeQuery();
+			while(rst.next()){	
+				list.add(new Order1(rst.getInt("oid"),
+						rst.getString("recipient_name"),
+						rst.getString("source"),
+						rst.getString("destination"),
+						rst.getString("contact"),
+						rst.getString("status"),
+						rst.getString("items"),
+						rst.getFloat("price"),
+						rst.getInt("bid"),
 						rst.getString("rname"),
 						rst.getString("dname")));
 			}
-			return orders;
+			return list;
 		}catch(Exception e){e.printStackTrace();}
 		return null;
 	}

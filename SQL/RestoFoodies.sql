@@ -27,11 +27,15 @@ rid int primary key auto_increment,
 name varchar(100) not null unique,
 contact varchar(50) not null,
 email varchar(50) not null,
-branch varchar(100) not null,
 categories text,
-latlng varchar(100) not null,
 profile varchar(100),
-username varchar(50) not null
+uid int references user(uid)
+);
+create table branch(
+bid int primary key auto_increment,
+bname varchar(50) not null,
+location varchar(100) not null default "0,0",
+rid int references restaurant(rid)
 );
 create table category(
 cid int primary key auto_increment,
@@ -54,33 +58,16 @@ status varchar(50) not null default 'Available',
 cname varchar(50) references category(cname),
 rid int references restaurant(rid)
 );
-create table orders(
-oid int primary key auto_increment,
-name varchar(50) not null,
-status varchar(50) default 'Unsubmitted',
-location varchar(50) not null default '0,0',
-total_price float not null default 0,
-username varchar(50) references user(username)
-);
-create table added_items(
-afid int primary key auto_increment,
-quantity int not null default 1,
-oid int references orders(oid),
-fid int references food_item(fid)
-);
-create table list(
-lid int primary key auto_increment,
-oids text,
-rid int references restaurant(rid)
-);
 create table order1(
 oid int primary key auto_increment,
 recipient_name varchar(50) not null,
+source varchar(100) not null,
 destination varchar(50) not null,
 contact varchar(50) not null,
 status varchar(50) not null default 'Placed',
 items text,
 price float,
-branch text,
-rname varchar(50) not null
+bid int references branch(bid),
+rname varchar(50) not null,
+dname varchar(50)
 );

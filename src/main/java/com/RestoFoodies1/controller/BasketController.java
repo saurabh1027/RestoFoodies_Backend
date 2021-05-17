@@ -29,9 +29,9 @@ public class BasketController {
 	}
 	
 	@GetMapping("/Restaurants/{rname}/Orders")
-	public List<Order1> getRestaurantPlacedOrdersByBranch(@PathVariable("rname") String rname,
-		@RequestParam("status") String status,@RequestParam("branch") String branch){
-		return bdao.getRestaurantOrdersByBranch(status,branch,rname);
+	public List<Order1> getRestaurantPlacedOrdersByBid(@PathVariable("rname") String rname,
+		@RequestParam("status") String status,@RequestParam("bid") String bid){
+		return bdao.getRestaurantOrdersByBid(status,Integer.parseInt(bid),rname);
 	}
 	
 	@PatchMapping("/Items")
@@ -62,6 +62,11 @@ public class BasketController {
 	@GetMapping("/Delivery")
 	public List<Order1> getOrdersByLocation(@RequestParam("location") String location){
 		return bdao.getOrdersByLocation(location);
+	}
+
+	@GetMapping("/Delivery/{dname}/Orders")
+	public List<Order1> getDeliveringOrdersByDname(@PathVariable String dname){
+		return bdao.getDeliveringOrdersByDname(dname);
 	}
 
 	// In use - end
