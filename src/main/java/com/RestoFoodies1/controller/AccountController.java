@@ -97,6 +97,11 @@ public class AccountController {
 		return jwt;
 	}
 
+	@PostMapping("/add-user")
+	public String addUser(@RequestBody User user){
+		return udao.saveUser(user);
+	}
+
 	// In use - end
 	
 }

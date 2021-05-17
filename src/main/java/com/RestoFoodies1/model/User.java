@@ -11,7 +11,9 @@ public class User {
 	private String location;
 	private String latlng;
 	private String profile;
+
 	public User() {}
+
 	public User(int uid,String username,String password,String fullname,String role,String contact,String email,String location,String latlng,String profile){
 		this.uid = uid;
         this.username = username;
@@ -24,6 +26,7 @@ public class User {
         this.latlng = latlng;
         this.profile = profile;
 	}
+
 	public User(String username,String password,String fullname,String role,String contact,String email,String location,String latlng,String profile){
         this.username = username;
         this.password = password;
@@ -35,6 +38,7 @@ public class User {
         this.latlng = latlng;
         this.profile = profile;
 	}
+
 	public int getUid() {
 		return uid;
 	}
@@ -95,6 +99,7 @@ public class User {
 	public void setProfile(String profile) {
 		this.profile = profile;
 	}
+
 	@Override
 	public String toString() {
 		return "User [uid=" + uid + ", username=" + username + ", password=" + password + ", fullname=" + fullname
