@@ -51,7 +51,7 @@ public class UserDao {
 	
 	public String updateUser(User user) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("update user set password=?,fullname=?,role=?,contact=?,email=?,location=?,latlng=?,profile=? where uid=?");
+			PreparedStatement pstmt = con.prepareStatement("update user set password=?,fullname=?,role=?,contact=?,email=?,location=?,latlng=?,profile=?,username=? where uid=?");
 			pstmt.setString(1, user.getPassword());
 			pstmt.setString(2, user.getFullname());
 			pstmt.setString(3, user.getRole());
@@ -60,7 +60,8 @@ public class UserDao {
 			pstmt.setString(6, user.getLocation());
 			pstmt.setString(7, user.getLatlng());
 			pstmt.setString(8, user.getProfile());
-			pstmt.setInt(9, user.getUid());
+			pstmt.setString(9, user.getUsername());
+			pstmt.setInt(10, user.getUid());
 			return (pstmt.executeUpdate()==1)?"Success":"Data updation failed!";
 		} catch (Exception e) {e.printStackTrace();}
 		return "Database Error";

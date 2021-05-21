@@ -24,7 +24,8 @@ public class AccountController {
 	UserDao udao = new UserDao(DBConnection.createConnection());
 	@Autowired
 	private JwtUtil jwtUtil;
-	String imageLocation= "E:\\VS-Code\\Projects\\Angular\\RestoFoodies\\src\\assets\\images\\";
+//	String imageLocation= "E:\\VS-Code\\Projects\\Angular\\RestoFoodies\\src\\assets\\images\\";
+	String imageLocation = "/home/appu/work/dyrestofoodies/RestoFoodies/src/assets/images/";
 	
 	// In use - start
 	
@@ -95,6 +96,11 @@ public class AccountController {
 			}else return new JwtUser("","",message.trim());
 		}catch(Exception e) {e.printStackTrace();}
 		return jwt;
+	}
+
+	@PostMapping("/add-user")
+	public String addUser(@RequestBody User user){
+		return udao.saveUser(user);
 	}
 
 	// In use - end

@@ -25,7 +25,7 @@ import com.RestoFoodies1.util.DBConnection;
 public class RestaurantController {
 	RestaurantDao rdao = new RestaurantDao(DBConnection.createConnection());
 	// String imageLocation = "E:\\VS-Code\\Projects\\Angular\\RestoFoodies\\src\\assets\\images\\";  For Windows
-	String imageLocation = "/home/sauru8887/Documents/Github/RestoFoodies/src/assets/images/";
+	String imageLocation = "/home/appu/work/dyrestofoodies/RestoFoodies/src/assets/images/";
 	
 	//not sure
 	@PostMapping("/get-items-by-fids")
