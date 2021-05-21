@@ -87,7 +87,7 @@ public class RestaurantController {
 	public List<Food_Item> getRestaurantItems(@PathVariable int rid,@RequestParam("status") String status){
 		return rdao.getRestaurantItems(rid,status);
 	}
-	
+
 	@GetMapping("/Restaurants")
 	public List<Restaurant> getRestaurantsByLocation(@RequestParam("location") String location){
 		return rdao.getRestaurantsByLocation(location);
@@ -156,6 +156,11 @@ public class RestaurantController {
 	@GetMapping("/Restaurants/{rid}/Branches/{bname}")
 	public Branch getBranchOfRestaurantByLocation(@PathVariable("rid") int rid,@PathVariable("bname") String bname){
 		return rdao.getBranchOfRestaurantByLocation(bname,rid);
+	}
+
+	@GetMapping("/Admin/Restaurants")
+	public List<Restaurant> getRestaurants(){
+		return rdao.getRestaurants();
 	}
 
 	

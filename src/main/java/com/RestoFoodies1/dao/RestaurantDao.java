@@ -88,24 +88,6 @@ public class RestaurantDao {
 		return null;
 	}
 
-	public Restaurant getRestaurantByRname(String rname) {
-		try {
-			PreparedStatement pstmt = con.prepareStatement("select * from restaurant where name =?");
-			pstmt.setString(1, rname);
-			ResultSet rst = pstmt.executeQuery();
-			if(rst.next()) {
-				return new Restaurant(rst.getInt("rid"),
-					rst.getString("name"),
-					rst.getString("contact"),
-					rst.getString("email"),
-					rst.getString("categories"),
-					rst.getString("profile"),
-					rst.getInt("uid"));
-			}
-		} catch (Exception e) {e.printStackTrace();}
-		return null;
-	}
-	
 	public List<String> getLocations(){
 		List<String> list = new ArrayList<String>();
 		try {
@@ -405,6 +387,26 @@ public class RestaurantDao {
 		}catch(Exception e){e.printStackTrace();}
 		return null;
 	}
+
+	public List<Restaurant> getRestaurants(){
+		List<Restaurant> list = new ArrayList<Restaurant>();
+		try{
+			Statement stmt = con.createStatement();
+			ResultSet rst = stmt.executeQuery("select * from restaurant");
+			while(rst.next()){
+				 list.add(new Restaurant(rst.getInt("rid"),
+						rst.getString("name"),
+						rst.getString("contact"),
+						rst.getString("email"),
+						rst.getString("categories"),
+						rst.getString("profile"),
+						rst.getInt("uid")));
+			}
+		}catch (Exception e) {e.printStackTrace();}
+		return list;
+	}
+
+
 
 	// In use - end
 	

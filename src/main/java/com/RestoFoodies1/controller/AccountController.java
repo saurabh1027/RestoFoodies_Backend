@@ -3,6 +3,7 @@ package com.RestoFoodies1.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +102,11 @@ public class AccountController {
 	@PostMapping("/add-user")
 	public String addUser(@RequestBody User user){
 		return udao.saveUser(user);
+	}
+
+	@GetMapping("/get-user-by-role")
+	public List<User> getUserByRole(@RequestParam("role") String role){
+		return udao.getUsersByRole(role);
 	}
 
 	// In use - end

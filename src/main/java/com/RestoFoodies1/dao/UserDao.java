@@ -3,6 +3,9 @@ package com.RestoFoodies1.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.RestoFoodies1.model.JwtUser;
 import com.RestoFoodies1.model.User;
@@ -91,6 +94,20 @@ public class UserDao {
 			return (pstmt.executeUpdate()==1) ? "Success":"Username Exists";
 		}catch(Exception e) {e.printStackTrace();}
 		return "Database Error";
+	}
+
+	public List<User> getUsersByRole(String role){
+		List<User> list = new ArrayList<User>();
+		try{
+			PreparedStatement pstmt = con.prepareStatement("select * from user where role = ?");
+			pstmt.setString(1,role);
+			ResultSet rst = pstmt.executeQuery();
+			while(rst.next()){
+				list.add(new User(rst.getInt("uid"), rst.getString("username"), rst.getString("password"), rst.getString("fullname"), rst.getString("role"), rst.getString("contact"), rst.getString("email"), rst.getString("location"), rst.getString("latlng"), rst.getString("profile")));
+			}
+			return list;
+		}catch(Exception e) {e.printStackTrace();}
+		return null;
 	}
 
 	// In use - end

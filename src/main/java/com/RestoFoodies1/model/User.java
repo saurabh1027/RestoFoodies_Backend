@@ -27,18 +27,6 @@ public class User {
         this.profile = profile;
 	}
 
-	public User(String username,String password,String fullname,String role,String contact,String email,String location,String latlng,String profile){
-        this.username = username;
-        this.password = password;
-        this.fullname = fullname;
-        this.role = role;
-        this.contact = contact;
-        this.email = email;
-        this.location = location;
-        this.latlng = latlng;
-        this.profile = profile;
-	}
-
 	public int getUid() {
 		return uid;
 	}
