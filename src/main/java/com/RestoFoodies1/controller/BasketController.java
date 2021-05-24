@@ -39,10 +39,10 @@ public class BasketController {
 		return bdao.updateItems(items);
 	}
 	
-	@GetMapping("/Customers/{username}/Orders")
-	public List<Order1> getOrdersByUsername(@PathVariable("username") String username) {
-		return bdao.getOrdersByUsername(username);
-	}
+	// @GetMapping("/Customers/{username}/Orders")
+	// public List<Order1> getOrdersByUsername(@PathVariable("username") String username) {
+	// 	return bdao.getOrdersByUsername(username);
+	// }
 	
 	@PatchMapping("/Order")
 	public String updateOrder(@RequestBody Order1 order){
@@ -54,10 +54,10 @@ public class BasketController {
 		return bdao.getOrdersByContact(contact);
 	}
 
-	@PostMapping("/add-order-item/{oid}")
-	public String addItemToOrder(@PathVariable int oid,@RequestBody Food_Item item) {
-		return bdao.addItemToOrder(oid,item);
-	}
+	// @PostMapping("/add-order-item/{oid}")
+	// public String addItemToOrder(@PathVariable int oid,@RequestBody Food_Item item) {
+	// 	return bdao.addItemToOrder(oid,item);
+	// }
 
 	@GetMapping("/Delivery")
 	public List<Order1> getOrdersByLocation(@RequestParam("location") String location){
