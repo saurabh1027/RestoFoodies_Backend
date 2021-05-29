@@ -281,12 +281,13 @@ public class RestaurantDao {
 
 	public String updateRestaurant(Restaurant rest) {
 		try {
-			PreparedStatement pstmt = con.prepareStatement("update restaurant set name=?,contact=?,email=?,categories=? where rid=?");
+			PreparedStatement pstmt = con.prepareStatement("update restaurant set name=?,contact=?,email=?,categories=?,profile = ? where rid=?");
 			pstmt.setString(1, rest.getName());
 			pstmt.setString(2, rest.getContact());
 			pstmt.setString(3, rest.getEmail());
 			pstmt.setString(4, rest.getCategories());
-			pstmt.setInt(5, rest.getRid());
+			pstmt.setString(5,rest.getProfile());
+			pstmt.setInt(6, rest.getRid());
 			int i = pstmt.executeUpdate();
 			return (i==1)?"Success":"Failed to update restaurant";
 		} catch (Exception e) {e.printStackTrace();}
